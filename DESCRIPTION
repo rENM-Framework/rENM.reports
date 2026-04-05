@@ -1,0 +1,24 @@
+Package: rENM.reports
+Type: Package
+Title: Report generation tools for rENM
+Version: 0.1.0.9000
+Author: John L. Schnase
+Maintainer: John L. Schnase <jschnase@mac.com>
+ORCID: 0000-0001-7473-3977
+Description: Helper tools to collect and summarize outputs from rENM framework
+    (maps, tables, ChatGPT analyses, etc.) Note that results from rENM.analysis
+    must exist in order for the tools in rENM.reports to be used ...
+License: MIT + file LICENSE
+Encoding: UTF-8
+RoxygenNote: 7.3.3
+Imports:
+    magick,
+    officer,
+    dplyr,
+    readr,
+    gt,
+    openxlsx
+Suggests:
+    webshot2,
+    pagedown,
+    chromote
