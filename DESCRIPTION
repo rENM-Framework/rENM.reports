@@ -22,3 +22,5 @@ Suggests:
     webshot2,
     pagedown,
     chromote
+URL: https://github.com/jschnase/rENM.reports
+BugReports: https://github.com/jschnase/rENM.reports/issues
