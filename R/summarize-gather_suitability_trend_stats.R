@@ -5,9 +5,9 @@
 #' suitability and hotspot metrics.
 #'
 #' @details
-#' This function is part of the rENM processing pipeline and
-#' operates within the project directory structure defined by
-#' rENM_project_dir().
+#' This function is part of the rENM framework's processing pipeline 
+#' and operates within the project directory structure defined by
+#' rENM_project_dir().s
 #'
 #' \strong{Pipeline context}
 #' Combines state-level suitability trend outputs with hotspot statistics

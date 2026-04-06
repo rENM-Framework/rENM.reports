@@ -4,8 +4,8 @@
 #' statistics with significance marks (*, **, ***) and bolding by PD.
 #'
 #' @details
-#' This function is part of the rENM processing pipeline and
-#' operates within the project directory structure defined by
+#' This function is part of the rENM framework's processing pipeline 
+#' and operates within the project directory structure defined by
 #' rENM_project_dir().
 #'
 #' \strong{Pipeline context}
