@@ -23,6 +23,8 @@ Imports:
     magick,
     officer,
     openxlsx,
+    pdftools,
+    png,
     readr
 Suggests:
     chromote,
