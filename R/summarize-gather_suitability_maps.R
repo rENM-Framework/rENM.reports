@@ -1,4 +1,4 @@
-#' Assemble 3x3 suitability map contact sheet
+#' Assemble side-by-side suitability maps into paged composites
 #'
 #' Builds a 3x3 contact sheet of suitability maps for a species code by
 #' collecting prediction PNGs from TimeSeries outputs and arranging them on

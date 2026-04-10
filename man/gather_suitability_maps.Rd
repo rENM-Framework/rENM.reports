@@ -2,7 +2,7 @@
 % Please edit documentation in R/summarize-gather_suitability_maps.R
 \name{gather_suitability_maps}
 \alias{gather_suitability_maps}
-\title{Assemble 3x3 suitability map contact sheet}
+\title{Assemble side-by-side suitability maps into paged composites}
 \usage{
 gather_suitability_maps(
   alpha_code,
