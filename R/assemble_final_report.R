@@ -1,30 +1,27 @@
-#' Assemble a final multi-page report for an rENM run
+#' Assemble a final report for an rENM run
 #'
-#' Combines a predefined set of per-page PDF products into a single
-#' report PDF for a given species run. Optionally rasterizes the pages
-#' and draws centered page numbers on all but the cover page.
+#' Combines a predefined or user-specified set of per-page PDF products
+#' into a single report PDF for a given species run. Optionally
+#' rasterizes the pages and draws centered page numbers on all but
+#' the cover page.
 #'
 #' @details
 #' This function is part of the rENM framework's processing pipeline
 #' and operates within the project directory structure defined by
 #' rENM_project_dir().
 #'
+#' By default, a fixed set of pages is assembled in a predefined order.
+#' Users may override this behavior via the \code{pages} argument to:
+#' \itemize{
+#'   \item reorder pages
+#'   \item omit pages
+#'   \item include a subset of pages
+#' }
+#'
 #' \strong{Inputs}
 #' \itemize{
 #'   \item Pre-generated page PDFs in
 #'         \code{<rENM_project_dir()>/runs/<alpha_code>/Summaries/pages/}
-#'         (nine files, in the exact order listed):
-#'         \itemize{
-#'           \item \code{<alpha_code>-Suitability-Trend-Analysis.pdf}
-#'           \item \code{<alpha_code>-Suitability-Trends.pdf}
-#'           \item \code{<alpha_code>-State-Trends.pdf}
-#'           \item \code{<alpha_code>-Centroid-Trends.pdf}
-#'           \item \code{<alpha_code>-Suitability-TimeSeries.pdf}
-#'           \item \code{<alpha_code>-Range-TimeSeries.pdf}
-#'           \item \code{<alpha_code>-Variable-Trends.pdf}
-#'           \item \code{<alpha_code>-Variable-Trend-Maps1.pdf}
-#'           \item \code{<alpha_code>-Variable-Trend-Maps2.pdf}
-#'         }
 #' }
 #'
 #' \strong{Outputs}
@@ -36,60 +33,42 @@
 #'         \code{<rENM_project_dir()>/runs/<alpha_code>/_log.txt}
 #' }
 #'
-#' \strong{Methods}
-#' \itemize{
-#'   \item \code{pdftools::pdf_combine()} merges component PDFs.
-#'   \item When \code{page_numbers = TRUE} the merged PDF is rasterized
-#'         with \code{pdftools::pdf_convert()}, read by
-#'         \code{png::readPNG()}, redrawn via base graphics, and saved as
-#'         a numbered PDF.
-#' }
-#'
-#' \strong{Dependencies}
-#' \itemize{
-#'   \item \pkg{pdftools} for PDF I/O and rasterization.
-#'   \item \pkg{png} for reading rasterized pages when numbering is
-#'         requested.
-#' }
-#'
-#' @param alpha_code Character. Four-letter species alpha code that
-#'   identifies the run, for example \code{"BETH"}.
-#' @param page_numbers Logical. If \code{TRUE} (default), draw centered
-#'   page numbers on all pages except the first. If \code{FALSE}, simply
-#'   combine the PDFs without numbering.
-#' @param dpi Numeric. Rasterization resolution (dots per inch) used
-#'   when \code{page_numbers = TRUE}. Ignored otherwise. Typical values
-#'   range from 120 to 300.
-#' @param cleanup Logical. If \code{TRUE} (default), delete temporary
-#'   files generated during rasterization. Ignored when
-#'   \code{page_numbers = FALSE}.
-#' @param verbose Logical. If \code{TRUE} (default), print progress
-#'   messages.
-#'
-#' @return Character. Invisibly returns the absolute path to the final
-#'   report PDF.
+#' @param alpha_code Character. Four-letter species alpha code.
+#' @param pages Character vector. Optional. Specifies which pages to
+#'   include and their order. May be either:
 #'   \itemize{
-#'     \item Writes the combined report PDF.
-#'     \item Appends a formatted processing summary to the run log.
+#'     \item full filenames (e.g., "BETH-Suitability-Trends.pdf"), or
+#'     \item short keys (see Details; e.g., "Suitability-Trends")
 #'   }
+#'   If \code{NULL} (default), the standard page set and order are used.
+#' @param page_numbers Logical. Add page numbers (default TRUE).
+#' @param dpi Numeric. Rasterization resolution when numbering.
+#' @param cleanup Logical. Remove temporary files.
+#' @param verbose Logical. Print progress messages.
+#'
+#' @return Character. Invisibly returns the final PDF path.
 #'
 #' @importFrom pdftools pdf_combine pdf_length pdf_convert
 #' @importFrom png readPNG
 #'
 #' @examples
 #' \dontrun{
-#' # Default: combine pages and add numbers
 #' assemble_final_report("BETH")
 #'
-#' # Fast combine without numbering
-#' assemble_final_report("BETH", page_numbers = FALSE)
-#'
-#' # High-resolution numbering
-#' assemble_final_report("BETH", dpi = 300)
+#' # Reorder and omit pages
+#' assemble_final_report(
+#'   "BETH",
+#'   pages = c(
+#'     "Suitability-Trend-Analysis",
+#'     "Suitability-Trends",
+#'     "Centroid-Trends"
+#'   )
+#' )
 #' }
 #'
 #' @export
 assemble_final_report <- function(alpha_code,
+                                  pages = NULL,
                                   page_numbers = TRUE,
                                   dpi = 150,
                                   cleanup = TRUE,
@@ -98,72 +77,77 @@ assemble_final_report <- function(alpha_code,
   # Start timing
   # -------------------------------------------------------------------
   start_time <- Sys.time()
-
+  
   # -------------------------------------------------------------------
   # Check for required packages
   # -------------------------------------------------------------------
   if (!requireNamespace("pdftools", quietly = TRUE)) {
-    stop("Package 'pdftools' is required but not installed. Install with install.packages('pdftools').")
+    stop("Package 'pdftools' is required but not installed.")
   }
   if (page_numbers && !requireNamespace("png", quietly = TRUE)) {
-    stop("Package 'png' is required when page_numbers = TRUE. Install with install.packages('png').")
+    stop("Package 'png' is required when page_numbers = TRUE.")
   }
-
+  
   # -------------------------------------------------------------------
-  # Determine project root (CRAN-compliant: no hard-coded paths)
+  # Determine project root
   # -------------------------------------------------------------------
   project_dir <- rENM_project_dir()
-
+  
   # -------------------------------------------------------------------
   # Define key paths
   # -------------------------------------------------------------------
-  # Base summaries directory for this alpha code
   base_dir  <- file.path(project_dir, "runs", alpha_code, "Summaries")
-  # Run directory root
   run_dir   <- file.path(project_dir, "runs")
-  # Directory where component page PDFs live
   pages_dir <- file.path(base_dir, "pages")
-  # Final report output path
   out_path  <- file.path(base_dir, sprintf("%s-Final-Report.pdf", alpha_code))
-  # Log file (eBird-standard log style) for this alpha code
   log_path  <- file.path(run_dir, alpha_code, "_log.txt")
-
-  # Ensure summary directory exists (pages_dir is assumed to exist already)
+  
   dir.create(base_dir, recursive = TRUE, showWarnings = FALSE)
-
+  
   # -------------------------------------------------------------------
-  # Construct the list of expected input PDFs in the desired order
+  # Default page definitions (canonical order)
   # -------------------------------------------------------------------
-  page_files <- c(
-    sprintf("%s-Suitability-Trend-Analysis.pdf", alpha_code),
-    sprintf("%s-Suitability-Trends.pdf",          alpha_code),
-    sprintf("%s-State-Trends.pdf",                alpha_code),
-    sprintf("%s-Centroid-Trends.pdf",             alpha_code),
-    sprintf("%s-Suitability-TimeSeries.pdf",      alpha_code),
-    sprintf("%s-Range-TimeSeries.pdf",            alpha_code),
-    sprintf("%s-Variable-Trends.pdf",             alpha_code),
-    sprintf("%s-Variable-Trend-Maps1.pdf",        alpha_code),
-    sprintf("%s-Variable-Trend-Maps2.pdf",        alpha_code)
+  default_pages <- c(
+    "Suitability-Trend-Analysis",
+    "Suitability-Trends",
+    "State-Trends",
+    "Centroid-Trends",
+    "Suitability-TimeSeries",
+    "Range-TimeSeries",
+    "Variable-Trends",
+    "Variable-Trend-Maps1",
+    "Variable-Trend-Maps2"
   )
-
+  
+  # -------------------------------------------------------------------
+  # Resolve pages (NEW — surgical insertion)
+  # -------------------------------------------------------------------
+  if (is.null(pages)) {
+    page_keys <- default_pages
+  } else {
+    page_keys <- pages
+  }
+  
+  # If user passed full filenames, keep them; otherwise construct names
+  if (all(grepl("\\.pdf$", page_keys))) {
+    page_files <- page_keys
+  } else {
+    page_files <- sprintf("%s-%s.pdf", alpha_code, page_keys)
+  }
+  
   input_paths <- file.path(pages_dir, page_files)
-
+  
   # -------------------------------------------------------------------
   # Console: report starting state
   # -------------------------------------------------------------------
   if (verbose) {
-    message("[assemble_final_report] Starting final report assembly for alpha_code = '", alpha_code, "'.")
-    message("  - Summaries directory : ", base_dir)
-    message("  - Pages directory     : ", pages_dir)
-    message("  - Output file         : ", out_path)
-    message("  - Page numbers        : ", page_numbers)
-    if (page_numbers) {
-      message("  - Rasterization DPI   : ", dpi)
-    }
+    message("[assemble_final_report] Starting final report assembly for '", alpha_code, "'.")
+    message("  - Pages selected     : ", length(input_paths))
+    message("  - Page numbers       : ", page_numbers)
   }
-
+  
   # -------------------------------------------------------------------
-  # Verify all expected input PDFs exist
+  # Verify inputs exist
   # -------------------------------------------------------------------
   missing <- input_paths[!file.exists(input_paths)]
   if (length(missing) > 0) {

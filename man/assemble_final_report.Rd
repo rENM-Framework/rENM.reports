@@ -2,10 +2,11 @@
 % Please edit documentation in R/assemble_final_report.R
 \name{assemble_final_report}
 \alias{assemble_final_report}
-\title{Assemble a final multi-page report for an rENM run}
+\title{Assemble a final report for an rENM run}
 \usage{
 assemble_final_report(
   alpha_code,
+  pages = NULL,
   page_numbers = TRUE,
   dpi = 150,
   cleanup = TRUE,
@@ -13,58 +14,50 @@ assemble_final_report(
 )
 }
 \arguments{
-\item{alpha_code}{Character. Four-letter species alpha code that
-identifies the run, for example \code{"BETH"}.}
+\item{alpha_code}{Character. Four-letter species alpha code.}
 
-\item{page_numbers}{Logical. If \code{TRUE} (default), draw centered
-page numbers on all pages except the first. If \code{FALSE}, simply
-combine the PDFs without numbering.}
+\item{pages}{Character vector. Optional. Specifies which pages to
+include and their order. May be either:
+\itemize{
+  \item full filenames (e.g., "BETH-Suitability-Trends.pdf"), or
+  \item short keys (see Details; e.g., "Suitability-Trends")
+}
+If \code{NULL} (default), the standard page set and order are used.}
 
-\item{dpi}{Numeric. Rasterization resolution (dots per inch) used
-when \code{page_numbers = TRUE}. Ignored otherwise. Typical values
-range from 120 to 300.}
+\item{page_numbers}{Logical. Add page numbers (default TRUE).}
 
-\item{cleanup}{Logical. If \code{TRUE} (default), delete temporary
-files generated during rasterization. Ignored when
-\code{page_numbers = FALSE}.}
+\item{dpi}{Numeric. Rasterization resolution when numbering.}
 
-\item{verbose}{Logical. If \code{TRUE} (default), print progress
-messages.}
+\item{cleanup}{Logical. Remove temporary files.}
+
+\item{verbose}{Logical. Print progress messages.}
 }
 \value{
-Character. Invisibly returns the absolute path to the final
-  report PDF.
-  \itemize{
-    \item Writes the combined report PDF.
-    \item Appends a formatted processing summary to the run log.
-  }
+Character. Invisibly returns the final PDF path.
 }
 \description{
-Combines a predefined set of per-page PDF products into a single
-report PDF for a given species run. Optionally rasterizes the pages
-and draws centered page numbers on all but the cover page.
+Combines a predefined or user-specified set of per-page PDF products
+into a single report PDF for a given species run. Optionally
+rasterizes the pages and draws centered page numbers on all but
+the cover page.
 }
 \details{
 This function is part of the rENM framework's processing pipeline
 and operates within the project directory structure defined by
 rENM_project_dir().
 
+By default, a fixed set of pages is assembled in a predefined order.
+Users may override this behavior via the \code{pages} argument to:
+\itemize{
+  \item reorder pages
+  \item omit pages
+  \item include a subset of pages
+}
+
 \strong{Inputs}
 \itemize{
   \item Pre-generated page PDFs in
         \code{<rENM_project_dir()>/runs/<alpha_code>/Summaries/pages/}
-        (nine files, in the exact order listed):
-        \itemize{
-          \item \code{<alpha_code>-Suitability-Trend-Analysis.pdf}
-          \item \code{<alpha_code>-Suitability-Trends.pdf}
-          \item \code{<alpha_code>-State-Trends.pdf}
-          \item \code{<alpha_code>-Centroid-Trends.pdf}
-          \item \code{<alpha_code>-Suitability-TimeSeries.pdf}
-          \item \code{<alpha_code>-Range-TimeSeries.pdf}
-          \item \code{<alpha_code>-Variable-Trends.pdf}
-          \item \code{<alpha_code>-Variable-Trend-Maps1.pdf}
-          \item \code{<alpha_code>-Variable-Trend-Maps2.pdf}
-        }
 }
 
 \strong{Outputs}
@@ -75,33 +68,20 @@ rENM_project_dir().
   \item Processing summary appended to
         \code{<rENM_project_dir()>/runs/<alpha_code>/_log.txt}
 }
-
-\strong{Methods}
-\itemize{
-  \item \code{pdftools::pdf_combine()} merges component PDFs.
-  \item When \code{page_numbers = TRUE} the merged PDF is rasterized
-        with \code{pdftools::pdf_convert()}, read by
-        \code{png::readPNG()}, redrawn via base graphics, and saved as
-        a numbered PDF.
-}
-
-\strong{Dependencies}
-\itemize{
-  \item \pkg{pdftools} for PDF I/O and rasterization.
-  \item \pkg{png} for reading rasterized pages when numbering is
-        requested.
-}
 }
 \examples{
 \dontrun{
-# Default: combine pages and add numbers
 assemble_final_report("BETH")
 
-# Fast combine without numbering
-assemble_final_report("BETH", page_numbers = FALSE)
-
-# High-resolution numbering
-assemble_final_report("BETH", dpi = 300)
+# Reorder and omit pages
+assemble_final_report(
+  "BETH",
+  pages = c(
+    "Suitability-Trend-Analysis",
+    "Suitability-Trends",
+    "Centroid-Trends"
+  )
+)
 }
 
 }
