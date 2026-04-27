@@ -110,10 +110,10 @@ assemble_final_report <- function(alpha_code,
   default_pages <- c(
     "Suitability-Trend-Analysis",
     "Suitability-Trends",
-    "State-Trends",
-    "Centroid-Trends",
     "Suitability-TimeSeries",
-    "Range-TimeSeries",
+    "Centroid-Trends",
+    "State-Trends",
+    # "Range-TimeSeries",
     "Variable-Trends",
     "Variable-Trend-Maps1",
     "Variable-Trend-Maps2"
