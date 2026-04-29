@@ -1,5 +1,7 @@
 # rENM.reports
 
+![rENM](https://img.shields.io/badge/rENM-framework-blue) ![module](https://img.shields.io/badge/module-reports-informational)
+
 **Reporting and synthesis outputs for the rENM Framework**
 
 ## Overview
