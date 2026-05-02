@@ -7,6 +7,8 @@
 assemble_final_report(
   alpha_code,
   pages = NULL,
+  front_matter = NULL,
+  appendix = "variables.pdf",
   page_numbers = TRUE,
   dpi = 150,
   cleanup = TRUE,
@@ -24,6 +26,12 @@ include and their order. May be either:
 }
 If \code{NULL} (default), the standard page set and order are used.}
 
+\item{front_matter}{Character. Optional. Filename of a PDF located in
+\code{rENM.reports::inst/resources/} to prepend.}
+
+\item{appendix}{Character. Optional. Filename of a PDF located in
+\code{rENM.reports::inst/resources/} to append.}
+
 \item{page_numbers}{Logical. Add page numbers (default TRUE).}
 
 \item{dpi}{Numeric. Rasterization resolution when numbering.}
@@ -39,12 +47,13 @@ Character. Invisibly returns the final PDF path.
 Combines a predefined or user-specified set of per-page PDF products
 into a single report PDF for a given species run. Optionally
 rasterizes the pages and draws centered page numbers on all but
-the cover page.
+the cover page. Optionally prepends a front matter PDF and/or
+appends an appendix PDF sourced from rENM.reports.
 }
 \details{
 This function is part of the rENM framework's processing pipeline
 and operates within the project directory structure defined by
-rENM_project_dir().
+\code{rENM_project_dir()}.
 
 By default, a fixed set of pages is assembled in a predefined order.
 Users may override this behavior via the \code{pages} argument to:
@@ -54,10 +63,15 @@ Users may override this behavior via the \code{pages} argument to:
   \item include a subset of pages
 }
 
+Optional front matter and appendix PDFs must be located in
+\code{inst/resources/} within the rENM.reports package.
+
 \strong{Inputs}
 \itemize{
   \item Pre-generated page PDFs in
         \code{<rENM_project_dir()>/runs/<alpha_code>/Summaries/pages/}
+  \item Optional front matter / appendix PDFs in
+        \code{rENM.reports::inst/resources/}
 }
 
 \strong{Outputs}
@@ -73,14 +87,10 @@ Users may override this behavior via the \code{pages} argument to:
 \dontrun{
 assemble_final_report("BETH")
 
-# Reorder and omit pages
 assemble_final_report(
   "BETH",
-  pages = c(
-    "Suitability-Trend-Analysis",
-    "Suitability-Trends",
-    "Centroid-Trends"
-  )
+  front_matter = "Front-Matter.pdf",
+  appendix = "Appendix.pdf"
 )
 }
 
