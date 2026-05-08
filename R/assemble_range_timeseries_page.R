@@ -4,10 +4,6 @@
 #' maps above a shared caption with controlled spacing and proportional scaling.
 #'
 #' @details
-#' This function is part of the rENM framework's processing pipeline
-#' and operates within the project directory structure defined by
-#' rENM_project_dir().
-#'
 #' \strong{Pipeline context}
 #' \itemize{
 #'   \item Input map: per-species PNG created earlier in the reporting workflow.
@@ -162,8 +158,6 @@ assemble_range_timeseries_page <- function(alpha_code,
     stop("Package 'pdftools' is required but not installed.", call. = FALSE)
   }
   
-  magick_ns   <- asNamespace("magick")
-  pdftools_ns <- asNamespace("pdftools")
   
   # --------------------------------------------------------------------------
   # 2. Construct file paths using rENM_project_dir()
@@ -249,14 +243,14 @@ assemble_range_timeseries_page <- function(alpha_code,
   # 4. Read map PNG and caption PDF (first page) as magick images
   # --------------------------------------------------------------------------
   
-  map_img <- magick_ns$image_read(map_path)
+  map_img <- magick::image_read(map_path)
   
-  caption_raw <- pdftools_ns$pdf_render_page(
+  caption_raw <- pdftools::pdf_render_page(
     pdf  = caption_pdf_path,
     page = 1,
     dpi  = dpi
   )
-  caption_img <- magick_ns$image_read(caption_raw)
+  caption_img <- magick::image_read(caption_raw)
   
   # --------------------------------------------------------------------------
   # 5. Trim white margins from map and caption
@@ -269,8 +263,8 @@ assemble_range_timeseries_page <- function(alpha_code,
     ))
   }
   
-  map_trimmed <- magick_ns$image_trim(map_img, fuzz = trim_fuzz)
-  cap_trimmed <- magick_ns$image_trim(caption_img, fuzz = trim_fuzz)
+  map_trimmed <- magick::image_trim(map_img, fuzz = trim_fuzz)
+  cap_trimmed <- magick::image_trim(caption_img, fuzz = trim_fuzz)
   
   # --------------------------------------------------------------------------
   # 6. Scale trimmed map and caption to requested width fractions
@@ -279,12 +273,12 @@ assemble_range_timeseries_page <- function(alpha_code,
   target_map_w_px     <- as.integer(round(target_px * map_width_fraction))
   target_caption_w_px <- as.integer(round(target_px * caption_width_fraction))
   
-  map_scaled <- magick_ns$image_scale(map_trimmed, geometry = as.character(target_map_w_px))
-  cap_scaled <- magick_ns$image_scale(cap_trimmed, geometry = as.character(target_caption_w_px))
+  map_scaled <- magick::image_scale(map_trimmed, geometry = as.character(target_map_w_px))
+  cap_scaled <- magick::image_scale(cap_trimmed, geometry = as.character(target_caption_w_px))
   
   if (verbose) {
-    map_info <- magick_ns$image_info(map_scaled)
-    cap_info <- magick_ns$image_info(cap_scaled)
+    map_info <- magick::image_info(map_scaled)
+    cap_info <- magick::image_info(cap_scaled)
     message(sprintf(
       "[assemble_range_timeseries_page] Map scaled (trimmed) to: %dx%d px",
       map_info$width, map_info$height
@@ -299,29 +293,29 @@ assemble_range_timeseries_page <- function(alpha_code,
   # 7. Build gap spacer (if any) and vertically stack map, gap, and caption
   # --------------------------------------------------------------------------
   
-  map_info <- magick_ns$image_info(map_scaled)
-  cap_info <- magick_ns$image_info(cap_scaled)
+  map_info <- magick::image_info(map_scaled)
+  cap_info <- magick::image_info(cap_scaled)
   spacer_w_px <- max(map_info$width, cap_info$width)
   
   if (gap_px > 0) {
-    spacer <- magick_ns$image_blank(
+    spacer <- magick::image_blank(
       width  = spacer_w_px,
       height = gap_px,
       color  = "white"
     )
     
-    stacked <- magick_ns$image_append(
+    stacked <- magick::image_append(
       c(map_scaled, spacer, cap_scaled),
       stack = TRUE
     )
   } else {
-    stacked <- magick_ns$image_append(
+    stacked <- magick::image_append(
       c(map_scaled, cap_scaled),
       stack = TRUE
     )
   }
   
-  stack_info <- magick_ns$image_info(stacked)
+  stack_info <- magick::image_info(stacked)
   stack_w_px <- stack_info$width
   stack_h_px <- stack_info$height
   
@@ -344,9 +338,9 @@ assemble_range_timeseries_page <- function(alpha_code,
   
   if (scale_factor < 1.0) {
     new_w_px <- as.integer(round(stack_w_px * scale_factor))
-    stacked  <- magick_ns$image_scale(stacked, geometry = as.character(new_w_px))
+    stacked  <- magick::image_scale(stacked, geometry = as.character(new_w_px))
     
-    stack_info <- magick_ns$image_info(stacked)
+    stack_info <- magick::image_info(stacked)
     stack_w_px <- stack_info$width
     stack_h_px <- stack_info$height
     
@@ -364,7 +358,7 @@ assemble_range_timeseries_page <- function(alpha_code,
   # 9. Create blank page and composite stack at top margin (centered horizontally)
   # --------------------------------------------------------------------------
   
-  page_blank <- magick_ns$image_blank(
+  page_blank <- magick::image_blank(
     width  = page_w_px,
     height = page_h_px,
     color  = "white"
@@ -382,7 +376,7 @@ assemble_range_timeseries_page <- function(alpha_code,
     ))
   }
   
-  page_final <- magick_ns$image_composite(
+  page_final <- magick::image_composite(
     image           = page_blank,
     composite_image = stacked,
     operator        = "over",
@@ -393,7 +387,7 @@ assemble_range_timeseries_page <- function(alpha_code,
   # 10. Write output as a single-page PDF
   # --------------------------------------------------------------------------
   
-  magick_ns$image_write(page_final, path = out_pdf_path, format = "pdf")
+  magick::image_write(page_final, path = out_pdf_path, format = "pdf")
   
   if (verbose) {
     message("[assemble_range_timeseries_page] Wrote PDF: ", out_pdf_path)

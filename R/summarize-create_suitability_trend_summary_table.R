@@ -4,10 +4,6 @@
 #' trend data, exporting to Excel and optionally to image and PDF formats.
 #'
 #' @details
-#' This function is part of the rENM framework's processing pipeline 
-#' and operates within the project directory structure defined by
-#' rENM_project_dir().
-#'
 #' \strong{Pipeline context}
 #' Converts state-level suitability trend summary outputs into formatted
 #' tables suitable for reporting, publication, and visualization.
@@ -89,9 +85,9 @@
 create_suitability_trend_summary_table <- function(alpha_code) {
   # ---- Dependencies ---------------------------------------------------------
   req <- c("readr", "dplyr", "openxlsx", "gt")
-  missing <- req[!vapply(req, requireNamespace, logical(1), quietly = TRUE)]
-  if (length(missing)) {
-    stop("Missing required packages: ", paste(missing, collapse = ", "), ".")
+  missing_pkgs <- req[!vapply(req, requireNamespace, logical(1), quietly = TRUE)]
+  if (length(missing_pkgs)) {
+    stop("Missing required packages: ", paste(missing_pkgs, collapse = ", "), ".")
   }
   has_webshot2 <- requireNamespace("webshot2", quietly = TRUE)
   has_pagedown <- requireNamespace("pagedown", quietly = TRUE)

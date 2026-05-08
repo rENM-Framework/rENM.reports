@@ -61,10 +61,6 @@ Builds a single-page PDF combining a suitability trend map, a suitability
 change trend map (acceleration/deceleration), and a caption.
 }
 \details{
-This function is part of the rENM framework's processing pipeline
-and operates within the project directory structure defined by
-rENM_project_dir().
-
 \strong{Pipeline context}
 Produces a single-page PDF with:
 \itemize{

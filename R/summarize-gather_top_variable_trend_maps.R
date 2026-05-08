@@ -5,10 +5,6 @@
 #' for variable-contribution reporting in the rENM workflow.
 #'
 #' @details
-#' This function is part of the rENM framework's processing pipeline  
-#' and operates within the project directory structure defined by  
-#' rENM_project_dir().
-#'
 #' \strong{Pipeline steps}
 #' \itemize{
 #'   \item 1. Read the variable list from  
@@ -133,15 +129,9 @@ gather_top_variable_trend_maps <- function(alpha_code,
       stop(sprintf("Package '%s' is required.", pkg), call. = FALSE)
     }
   }
-  magick  <- asNamespace("magick")
-  officer <- asNamespace("officer")
   
   # ---- Basic path setup -----------------------------------------------------
-  if (!exists("rENM_project_dir", mode = "function")) {
-    stop("Function 'rENM_project_dir()' not found - make sure the package ",
-         "environment is loaded and up-to-date.", call. = FALSE)
-  }
-  project_dir <- rENM_project_dir()           # <-- NEW: single project root
+  project_dir <- rENM_project_dir()
   if (!dir.exists(project_dir)) {
     stop("Project directory returned by rENM_project_dir() does not exist: ",
          project_dir, call. = FALSE)
@@ -214,7 +204,7 @@ gather_top_variable_trend_maps <- function(alpha_code,
   target_w_px   <- round(content_w_px * content_scale)
   offset_x_px   <- round(margin_in * dpi + (content_w_px - target_w_px) / 2)
   
-  trim_img <- function(img) magick$image_trim(img, fuzz = trim_fuzz)
+  trim_img <- function(img) magick::image_trim(img, fuzz = trim_fuzz)
   
   # List PNGs helper
   list_pngs <- function(dir_path) {
@@ -270,19 +260,19 @@ gather_top_variable_trend_maps <- function(alpha_code,
       if (!is.na(a$A) && !is.na(a$R)) {
         message(sprintf("  [OK] %s from %s", v, b))
         
-        A <- trim_img(magick$image_read(a$A))
-        B <- trim_img(magick$image_read(a$R))
+        A <- trim_img(magick::image_read(a$A))
+        B <- trim_img(magick::image_read(a$R))
         
-        ia <- magick$image_info(A)
-        ib <- magick$image_info(B)
+        ia <- magick::image_info(A)
+        ib <- magick::image_info(B)
         shrink_factor <- 0.88
         target_h <- round(max(ia$height, ib$height) * shrink_factor)
-        A2 <- magick$image_scale(A, paste0("x", target_h))
-        B2 <- magick$image_scale(B, paste0("x", target_h))
+        A2 <- magick::image_scale(A, paste0("x", target_h))
+        B2 <- magick::image_scale(B, paste0("x", target_h))
         
-        A2  <- magick$image_border(A2, color = "white", geometry = "24x0")
-        pair <- magick$image_append(magick$image_join(A2, B2), stack = FALSE)
-        pair <- magick$image_border(pair, color = "white", geometry = "12x12")
+        A2  <- magick::image_border(A2, color = "white", geometry = "24x0")
+        pair <- magick::image_append(magick::image_join(A2, B2), stack = FALSE)
+        pair <- magick::image_border(pair, color = "white", geometry = "12x12")
         pair <- trim_img(pair)
         
         add_left_highlight <- FALSE
@@ -292,15 +282,15 @@ gather_top_variable_trend_maps <- function(alpha_code,
           add_left_highlight <- is.finite(s) && s >= 90
         }
         if (add_left_highlight) {
-          pair <- magick$image_border(pair, color = "white", geometry = "24x0")
+          pair <- magick::image_border(pair, color = "white", geometry = "24x0")
           border_w <- 6
-          border_h <- magick$image_info(pair)$height
-          blue_strip <- magick$image_blank(
+          border_h <- magick::image_info(pair)$height
+          blue_strip <- magick::image_blank(
             width  = border_w,
             height = border_h,
             color  = "darkblue"
           )
-          pair <- magick$image_append(magick$image_join(blue_strip, pair),
+          pair <- magick::image_append(magick::image_join(blue_strip, pair),
                                       stack = FALSE)
         }
         return(pair)
@@ -332,28 +322,28 @@ gather_top_variable_trend_maps <- function(alpha_code,
   
   # ---- Assemble pages -------------------------------------------------------
   build_page <- function(pairs_slice) {
-    add_h_gutter <- function(im) magick$image_border(im, color = "white",
+    add_h_gutter <- function(im) magick::image_border(im, color = "white",
                                                      geometry = "0x36")
     column <- Reduce(
-      function(a, b) magick$image_append(magick$image_join(a, b), stack = TRUE),
+      function(a, b) magick::image_append(magick::image_join(a, b), stack = TRUE),
       lapply(pairs_slice, add_h_gutter)
     )
     column <- trim_img(column)
     
-    info       <- magick$image_info(column)
+    info       <- magick::image_info(column)
     scaled_h   <- round(info$height * (target_w_px / info$width))
-    column_sc  <- magick$image_scale(column,
+    column_sc  <- magick::image_scale(column,
                                      sprintf("%dx%d", target_w_px, scaled_h))
     column_cr  <- if (scaled_h > content_h_px) {
-      magick$image_crop(column_sc,
+      magick::image_crop(column_sc,
                         geometry = sprintf("%dx%d+0+0",
                                            target_w_px, content_h_px))
     } else column_sc
     
-    page <- magick$image_blank(width = full_w_px,
+    page <- magick::image_blank(width = full_w_px,
                                height = full_h_px,
                                color = "white")
-    magick$image_composite(
+    magick::image_composite(
       page,
       column_cr,
       offset = sprintf("+%d+%d", offset_x_px, offset_y_px)
@@ -363,53 +353,53 @@ gather_top_variable_trend_maps <- function(alpha_code,
   pages <- lapply(split(pairs, ceiling(seq_along(pairs) / per_page)), build_page)
   
   # ---- Write outputs --------------------------------------------------------
-  magick$image_write(magick$image_join(pages), pdf_out, format = "pdf")
+  magick::image_write(magick::image_join(pages), pdf_out, format = "pdf")
   
   png_paths <- character(length(pages))
   for (i in seq_along(pages)) {
     png_i <- file.path(out_dir,
                        sprintf("%s-Variable-Trend-Maps-p%02d.png", code, i))
-    magick$image_write(pages[[i]], png_i, format = "png")
+    magick::image_write(pages[[i]], png_i, format = "png")
     png_paths[i] <- png_i
   }
   message("[OK] PNG pages saved: ",
           paste(basename(png_paths), collapse = ", "))
   
-  doc <- officer$read_docx()
-  sect <- officer$prop_section(
-    page_size    = officer$page_size(
+  doc <- officer::read_docx()
+  sect <- officer::prop_section(
+    page_size    = officer::page_size(
       orient = "portrait",
       width  = page_width_in,
       height = page_height_in
     ),
-    page_margins = officer$page_mar(
+    page_margins = officer::page_mar(
       top    = margin_in,
       bottom = margin_in,
       left   = margin_in,
       right  = margin_in
     )
   )
-  doc <- officer$body_set_default_section(doc, sect)
+  doc <- officer::body_set_default_section(doc, sect)
   tmp_png <- tempfile(fileext = ".png")
   on.exit(if (file.exists(tmp_png)) unlink(tmp_png), add = TRUE)
   
   for (i in seq_along(pages)) {
-    content <- magick$image_crop(
+    content <- magick::image_crop(
       pages[[i]],
       geometry = sprintf("%dx%d+%d+%d",
                          target_w_px, content_h_px, offset_x_px, offset_y_px)
     )
-    magick$image_write(content, tmp_png)
-    img_block <- officer$external_img(
+    magick::image_write(content, tmp_png)
+    img_block <- officer::external_img(
       src    = tmp_png,
       width  = target_w_px / dpi,
-      height = magick$image_info(content)$height / dpi
+      height = magick::image_info(content)$height / dpi
     )
-    if (i > 1) doc <- officer$body_add_break(doc)
-    doc <- officer$body_add_fpar(
+    if (i > 1) doc <- officer::body_add_break(doc)
+    doc <- officer::body_add_fpar(
       doc,
-      officer$fpar(img_block,
-                   fp_p = officer$fp_par(text.align = "center"))
+      officer::fpar(img_block,
+                   fp_p = officer::fp_par(text.align = "center"))
     )
   }
   print(doc, target = docx_out)

@@ -52,10 +52,6 @@ collecting prediction PNGs from TimeSeries outputs and arranging them on
 a standardized Letter-sized page layout for export to multiple formats.
 }
 \details{
-This function is part of the rENM framework's processing pipeline 
-and operates within the project directory structure defined by
-rENM_project_dir().
-
 \strong{Pipeline context}
 Assembles retrospective ENM prediction outputs into a standardized
 multi-format visual summary for interpretation and reporting.

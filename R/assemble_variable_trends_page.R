@@ -5,10 +5,6 @@
 #' alignment.
 #'
 #' @details
-#' This function is part of the rENM framework's processing pipeline
-#' and operates within the project directory structure defined by
-#' rENM_project_dir().
-#'
 #' \strong{Pipeline context}
 #' This function composes precomputed variable-trend visualizations into a
 #' single standardized reporting page. All operations are performed using

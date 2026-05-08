@@ -4,10 +4,6 @@
 #' change trend map (acceleration/deceleration), and a caption. 
 #'
 #' @details
-#' This function is part of the rENM framework's processing pipeline
-#' and operates within the project directory structure defined by
-#' rENM_project_dir().
-#'
 #' \strong{Pipeline context}
 #' Produces a single-page PDF with:
 #' \itemize{
@@ -163,7 +159,6 @@ assemble_suitability_trends_page <- function(alpha_code,
   if (!requireNamespace("pdftools", quietly = TRUE)) {
     stop("Package 'pdftools' is required for caption fidelity. install.packages('pdftools')", call. = FALSE)
   }
-  magick <- asNamespace("magick")
   
   # ---- Page geometry (pixels) -------------------------------------------------
   px <- function(inches) as.integer(round(inches * dpi))
@@ -179,47 +174,47 @@ assemble_suitability_trends_page <- function(alpha_code,
   
   # ---- Read and scale top panels (PNG) ---------------------------------------
   message("[assemble_suitability_trends_page] Reading trend panels...")
-  img_A <- magick$image_read(file_A)
-  img_B <- magick$image_read(file_B)
+  img_A <- magick::image_read(file_A)
+  img_B <- magick::image_read(file_B)
   
   target_w_each <- max(1L, floor((content_w_px - h_gap_px) / 2))
   
   scale_to_width <- function(im, w_target) {
-    info <- magick$image_info(im)
+    info <- magick::image_info(im)
     w0 <- as.numeric(info$width[1])
     h0 <- as.numeric(info$height[1])
     if (is.na(w0) || is.na(h0) || w0 <= 0 || h0 <= 0) {
       stop("Invalid source image size.")
     }
     h_target <- max(1L, as.integer(round(h0 * (w_target / w0))))
-    magick$image_resize(im, geometry = sprintf("%dx%d!", w_target, h_target))
+    magick::image_resize(im, geometry = sprintf("%dx%d!", w_target, h_target))
   }
   
   img_A_res <- scale_to_width(img_A, target_w_each)
   img_B_res <- scale_to_width(img_B, target_w_each)
   
-  info_A  <- magick$image_info(img_A_res)
-  info_B  <- magick$image_info(img_B_res)
+  info_A  <- magick::image_info(img_A_res)
+  info_B  <- magick::image_info(img_B_res)
   row_h_px <- max(as.integer(info_A$height[1]), as.integer(info_B$height[1]))
   
   pad_to_height <- function(im, target_h) {
-    inf <- magick$image_info(im)
+    inf <- magick::image_info(im)
     h0  <- as.integer(inf$height[1])
     w0  <- as.integer(inf$width[1])
     if (h0 >= target_h) return(im)
     dy <- target_h - h0
-    pad_top <- magick$image_blank(width = w0, height = floor(dy / 2), color = "white")
-    pad_bot <- magick$image_blank(width = w0, height = ceiling(dy / 2), color = "white")
-    magick$image_append(c(pad_top, im, pad_bot), stack = TRUE)
+    pad_top <- magick::image_blank(width = w0, height = floor(dy / 2), color = "white")
+    pad_bot <- magick::image_blank(width = w0, height = ceiling(dy / 2), color = "white")
+    magick::image_append(c(pad_top, im, pad_bot), stack = TRUE)
   }
   
   img_A_row <- pad_to_height(img_A_res, row_h_px)
   img_B_row <- pad_to_height(img_B_res, row_h_px)
   
-  row_strip <- magick$image_append(
+  row_strip <- magick::image_append(
     c(
       img_A_row,
-      magick$image_blank(width = h_gap_px, height = row_h_px, color = "white"),
+      magick::image_blank(width = h_gap_px, height = row_h_px, color = "white"),
       img_B_row
     ),
     stack = FALSE
@@ -235,9 +230,9 @@ assemble_suitability_trends_page <- function(alpha_code,
     pages     = 1,
     filenames = file.path(tempdir(), "caption_%d.png")
   )
-  caption_img <- magick$image_read(cap_png)
+  caption_img <- magick::image_read(cap_png)
   
-  cap_info <- magick$image_info(caption_img)
+  cap_info <- magick::image_info(caption_img)
   cap_w <- as.integer(cap_info$width[1])
   cap_h <- as.integer(cap_info$height[1])
   if (is.na(cap_w) || is.na(cap_h) || cap_w <= 0 || cap_h <= 0) {
@@ -248,7 +243,7 @@ assemble_suitability_trends_page <- function(alpha_code,
     scale_factor <- content_w_px / cap_w
     new_w <- max(1L, as.integer(floor(cap_w * scale_factor)))
     new_h <- max(1L, as.integer(floor(cap_h * scale_factor)))
-    caption_img <- magick$image_resize(
+    caption_img <- magick::image_resize(
       caption_img,
       geometry = sprintf("%dx%d", new_w, new_h)
     )
@@ -258,11 +253,11 @@ assemble_suitability_trends_page <- function(alpha_code,
   
   # ---- Compose final page -----------------------------------------------------
   message("[assemble_suitability_trends_page] Compositing page...")
-  page_canvas <- magick$image_blank(width = page_w_px,
+  page_canvas <- magick::image_blank(width = page_w_px,
                                     height = page_h_px,
                                     color = "white")
   
-  page_canvas <- magick$image_composite(
+  page_canvas <- magick::image_composite(
     page_canvas,
     row_strip,
     offset = sprintf("+%d+%d", left_px, top_px)
@@ -271,7 +266,7 @@ assemble_suitability_trends_page <- function(alpha_code,
   cap_x <- left_px + floor((content_w_px - cap_w) / 2)
   cap_y <- top_px + row_h_px + v_gap_px
   
-  page_canvas <- magick$image_composite(
+  page_canvas <- magick::image_composite(
     page_canvas,
     caption_img,
     offset = sprintf("+%d+%d", cap_x, cap_y)
@@ -279,7 +274,7 @@ assemble_suitability_trends_page <- function(alpha_code,
   
   # ---- Write output PDF -------------------------------------------------------
   message("[assemble_suitability_trends_page] Writing PDF: ", out_pdf)
-  magick$image_write(page_canvas, path = out_pdf, format = "pdf")
+  magick::image_write(page_canvas, path = out_pdf, format = "pdf")
   
   # ---- eBird-standard log -----------------------------------------------------
   stop_time   <- Sys.time()

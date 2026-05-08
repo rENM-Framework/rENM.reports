@@ -63,10 +63,6 @@ Builds a single-page PDF combining a suitability map with centroids and a
 centroid trend summary table.
 }
 \details{
-This function is part of the rENM framework's processing pipeline
-and operates within the project directory structure defined by
-rENM_project_dir().
-
 \strong{Pipeline context}
 This function assembles precomputed visualization outputs into a single
 standardized reporting page. It uses only package code and standard R

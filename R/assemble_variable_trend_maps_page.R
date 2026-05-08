@@ -4,10 +4,6 @@
 #' patterns of the top contributing variables.
 #'
 #' @details
-#' This function is part of the rENM framework's processing pipeline
-#' and operates within the project directory structure defined by
-#' \code{rENM_project_dir()}.
-#'
 #' \strong{Pipeline context}
 #' \itemize{
 #'   \item Copies a shared caption PDF (A) and a species-specific

@@ -5,10 +5,6 @@
 #' a standardized Letter-sized page layout for export to multiple formats.
 #'
 #' @details
-#' This function is part of the rENM framework's processing pipeline 
-#' and operates within the project directory structure defined by
-#' rENM_project_dir().
-#'
 #' \strong{Pipeline context}
 #' Assembles retrospective ENM prediction outputs into a standardized
 #' multi-format visual summary for interpretation and reporting.
@@ -109,8 +105,8 @@ gather_suitability_maps <- function(alpha_code,
   t_start <- Sys.time()
   code <- toupper(alpha_code)
 
-  cat("------------------------------------------------------------------------\n")
-  cat(sprintf("gather_suitability_maps(): Starting composite build for %s\n", code))
+  message("------------------------------------------------------------------------")
+  message(sprintf("gather_suitability_maps(): Starting composite build for %s", code))
 
   # Dependency checks (packages should be listed in DESCRIPTION Imports)
   for (pkg in c("magick", "officer")) {
@@ -121,8 +117,6 @@ gather_suitability_maps <- function(alpha_code,
       ), call. = FALSE)
     }
   }
-  magick  <- asNamespace("magick")
-  officer <- asNamespace("officer")
 
   # Project directory (CRAN-compliant)
   project_dir <- rENM_project_dir()
@@ -131,7 +125,7 @@ gather_suitability_maps <- function(alpha_code,
   out_dir <- file.path(project_dir, "runs", code, "Summaries", "maps")
   if (!dir.exists(out_dir)) {
     dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
-    cat("Created output directory:", out_dir, "\n")
+    message("Created output directory: ", out_dir)
   }
 
   # Build expected source list
@@ -141,7 +135,7 @@ gather_suitability_maps <- function(alpha_code,
     years, "model", sprintf("%s-%d-Prediction.png", code, years)
   )
 
-  cat("Checking source tiles (9 expected)...\n")
+  message(  cat("Checking source tiles (9 expected)...\n"))
   missing <- src_pngs[!file.exists(src_pngs)]
   if (length(missing) > 0) {
     stop(sprintf(
@@ -150,20 +144,20 @@ gather_suitability_maps <- function(alpha_code,
     ), call. = FALSE)
   }
 
-  cat("Reading and trimming source images...\n")
+  message(  cat("Reading and trimming source images...\n"))
   imgs <- lapply(src_pngs, function(p) {
-    im <- magick$image_read(p)
-    magick$image_trim(im, fuzz = trim_fuzz)
+    im <- magick::image_read(p)
+    magick::image_trim(im, fuzz = trim_fuzz)
   })
 
-  cat("Compositing 3x3 montage...\n")
-  contact <- magick$image_montage(
-    magick$image_join(imgs),
+  message(  cat("Compositing 3x3 montage...\n"))
+  contact <- magick::image_montage(
+    magick::image_join(imgs),
     tile     = tile,
     geometry = "+5+5",
     bg       = "white"
   )
-  contact <- magick$image_trim(contact, fuzz = trim_fuzz)
+  contact <- magick::image_trim(contact, fuzz = trim_fuzz)
 
   # Geometry
   full_w_px    <- round(page_width_in  * dpi)
@@ -171,12 +165,12 @@ gather_suitability_maps <- function(alpha_code,
   content_w_px <- round((page_width_in  - 2 * margin_in) * dpi)
   content_h_px <- round((page_height_in - 2 * margin_in) * dpi)
 
-  cat("Scaling montage to content width and cropping if needed...\n")
-  info <- magick$image_info(contact)
+  message(  cat("Scaling montage to content width and cropping if needed...\n"))
+  info <- magick::image_info(contact)
   scaled_height  <- round(info$height * (content_w_px / info$width))
-  contact_scaled <- magick$image_scale(contact, sprintf("%dx%d", content_w_px, scaled_height))
+  contact_scaled <- magick::image_scale(contact, sprintf("%dx%d", content_w_px, scaled_height))
   contact_cropped <- if (scaled_height > content_h_px) {
-    magick$image_crop(
+    magick::image_crop(
       contact_scaled,
       geometry = sprintf("%dx%d+0+0", content_w_px, content_h_px)
     )
@@ -184,9 +178,9 @@ gather_suitability_maps <- function(alpha_code,
     contact_scaled
   }
 
-  cat("Compositing on Letter-sized page...\n")
-  page <- magick$image_blank(width = full_w_px, height = full_h_px, color = "white")
-  page <- magick$image_composite(
+  message(  cat("Compositing on Letter-sized page...\n"))
+  page <- magick::image_blank(width = full_w_px, height = full_h_px, color = "white")
+  page <- magick::image_composite(
     page,
     contact_cropped,
     offset = paste0("+", margin_in * dpi, "+", margin_in * dpi)
@@ -198,46 +192,46 @@ gather_suitability_maps <- function(alpha_code,
   pdf_out  <- sprintf("%s.pdf",  base_name)
   docx_out <- sprintf("%s.docx", base_name)
 
-  cat("Saving PNG and PDF...\n")
-  magick$image_write(page, path = png_out, format = "png")
-  magick$image_write(page, path = pdf_out, format = "pdf")
+  message("Saving PNG and PDF...")
+  magick::image_write(page, path = png_out, format = "png")
+  magick::image_write(page, path = pdf_out, format = "pdf")
 
-  cat("Embedding montage in DOCX...\n")
-  doc <- officer$read_docx()
-  sect <- officer$prop_section(
-    page_size = officer$page_size(
+  message("Embedding montage in DOCX...")
+  doc <- officer::read_docx()
+  sect <- officer::prop_section(
+    page_size = officer::page_size(
       orient = "portrait",
       width = page_width_in,
       height = page_height_in
     ),
-    page_margins = officer$page_mar(
+    page_margins = officer::page_mar(
       top = margin_in,
       bottom = margin_in,
       left = margin_in,
       right = margin_in
     )
   )
-  doc <- officer$body_set_default_section(doc, value = sect)
+  doc <- officer::body_set_default_section(doc, value = sect)
 
   tmp_png <- tempfile(fileext = ".png")
   on.exit({
     if (file.exists(tmp_png)) unlink(tmp_png)
   }, add = TRUE)
-  magick$image_write(contact_cropped, path = tmp_png, format = "png")
+  magick::image_write(contact_cropped, path = tmp_png, format = "png")
 
-  img_block <- officer$external_img(
+  img_block <- officer::external_img(
     src    = tmp_png,
     width  = (content_w_px / dpi),
-    height = (magick$image_info(contact_cropped)$height / dpi)
+    height = (magick::image_info(contact_cropped)$height / dpi)
   )
-  fp <- officer$fpar(img_block, fp_p = officer$fp_par(text.align = "center"))
-  doc <- officer$body_add_fpar(doc, fp)
+  fp <- officer::fpar(img_block, fp_p = officer::fp_par(text.align = "center"))
+  doc <- officer::body_add_fpar(doc, fp)
   print(doc, target = docx_out)
 
-  cat("All outputs saved successfully.\n")
-  cat("  -", png_out, "\n")
-  cat("  -", pdf_out, "\n")
-  cat("  -", docx_out, "\n")
+  message(  cat("All outputs saved successfully.\n"))
+  message("  - ", png_out)
+  message("  - ", pdf_out)
+  message("  - ", docx_out)
 
   # eBird-standard log append
   t_end <- Sys.time()
@@ -277,8 +271,8 @@ gather_suitability_maps <- function(alpha_code,
     cat(paste0(log_block, collapse = "\n"), file = log_file, append = TRUE)
   }, silent = TRUE)
 
-  cat("------------------------------------------------------------------------\n")
-  cat("Processing summary written to log file.\n")
+  message("------------------------------------------------------------------------")
+  message(  cat("Processing summary written to log file.\n"))
 
   invisible(list(png = png_out, pdf = pdf_out, docx = docx_out))
 }

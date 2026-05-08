@@ -29,10 +29,6 @@ Produces a publication-ready summary table from state-level suitability
 trend data, exporting to Excel and optionally to image and PDF formats.
 }
 \details{
-This function is part of the rENM framework's processing pipeline 
-and operates within the project directory structure defined by
-rENM_project_dir().
-
 \strong{Pipeline context}
 Converts state-level suitability trend summary outputs into formatted
 tables suitable for reporting, publication, and visualization.

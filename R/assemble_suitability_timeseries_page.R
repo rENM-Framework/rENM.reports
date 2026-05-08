@@ -4,10 +4,6 @@
 #' maps above a shared caption with controlled spacing and proportional scaling.
 #'
 #' @details
-#' This function is part of the rENM framework's processing pipeline
-#' and operates within the project directory structure defined by
-#' rENM_project_dir().
-#'
 #' \strong{Pipeline context}
 #' For a given species alpha code (\code{alpha_code}), this function builds a
 #' single-page PDF that stacks:
@@ -160,8 +156,6 @@ assemble_suitability_timeseries_page <- function(alpha_code,
     stop("Package 'pdftools' is required.", call. = FALSE)
   }
   
-  magick_ns   <- asNamespace("magick")
-  pdftools_ns <- asNamespace("pdftools")
   
   # --------------------------------------------------------------------------
   # 2. Construct paths using rENM_project_dir() + system.file()
@@ -219,49 +213,49 @@ assemble_suitability_timeseries_page <- function(alpha_code,
   target_px <- min(round(target_content_width_in * dpi), content_w_px)
   gap_px <- round(gap_between_in * dpi)
   
-  map_img <- magick_ns$image_read(map_path)
-  cap_raw <- pdftools_ns$pdf_render_page(caption_pdf_path, page = 1, dpi = dpi)
-  cap_img <- magick_ns$image_read(cap_raw)
+  map_img <- magick::image_read(map_path)
+  cap_raw <- pdftools::pdf_render_page(caption_pdf_path, page = 1, dpi = dpi)
+  cap_img <- magick::image_read(cap_raw)
   
-  map_trimmed <- magick_ns$image_trim(map_img, fuzz = trim_fuzz)
-  cap_trimmed <- magick_ns$image_trim(cap_img, fuzz = trim_fuzz)
+  map_trimmed <- magick::image_trim(map_img, fuzz = trim_fuzz)
+  cap_trimmed <- magick::image_trim(cap_img, fuzz = trim_fuzz)
   
-  map_scaled <- magick_ns$image_scale(map_trimmed, as.character(round(target_px * map_width_fraction)))
-  cap_scaled <- magick_ns$image_scale(cap_trimmed, as.character(round(target_px * caption_width_fraction)))
+  map_scaled <- magick::image_scale(map_trimmed, as.character(round(target_px * map_width_fraction)))
+  cap_scaled <- magick::image_scale(cap_trimmed, as.character(round(target_px * caption_width_fraction)))
   
   spacer <- if (gap_px > 0) {
-    magick_ns$image_blank(
-      width = max(magick_ns$image_info(map_scaled)$width,
-                  magick_ns$image_info(cap_scaled)$width),
+    magick::image_blank(
+      width = max(magick::image_info(map_scaled)$width,
+                  magick::image_info(cap_scaled)$width),
       height = gap_px,
       color = "white"
     )
   }
   
   stacked <- if (gap_px > 0) {
-    magick_ns$image_append(c(map_scaled, spacer, cap_scaled), stack = TRUE)
+    magick::image_append(c(map_scaled, spacer, cap_scaled), stack = TRUE)
   } else {
-    magick_ns$image_append(c(map_scaled, cap_scaled), stack = TRUE)
+    magick::image_append(c(map_scaled, cap_scaled), stack = TRUE)
   }
   
-  info <- magick_ns$image_info(stacked)
+  info <- magick::image_info(stacked)
   scale_factor <- min(1, content_w_px / info$width, content_h_px / info$height)
   
   if (scale_factor < 1) {
-    stacked <- magick_ns$image_scale(stacked, as.character(round(info$width * scale_factor)))
+    stacked <- magick::image_scale(stacked, as.character(round(info$width * scale_factor)))
   }
   
-  page <- magick_ns$image_blank(page_w_px, page_h_px, color = "white")
+  page <- magick::image_blank(page_w_px, page_h_px, color = "white")
   
-  info <- magick_ns$image_info(stacked)
+  info <- magick::image_info(stacked)
   
   offset <- sprintf("+%d+%d",
                     margin_px + (content_w_px - info$width) / 2,
                     margin_px)
   
-  final <- magick_ns$image_composite(page, stacked, offset = offset)
+  final <- magick::image_composite(page, stacked, offset = offset)
   
-  magick_ns$image_write(final, out_pdf_path, format = "pdf")
+  magick::image_write(final, out_pdf_path, format = "pdf")
   
   log_file <- file.path(species_dir, "_log.txt")
   

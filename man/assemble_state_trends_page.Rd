@@ -104,10 +104,6 @@ Builds a single-page PDF that combines a state-level suitability map and
 a state hot spot map with a summary table into a structured layout.
 }
 \details{
-This function is part of the rENM framework's processing pipeline
-and operates within the project directory structure defined by
-rENM_project_dir().
-
 \strong{Pipeline context}
 This function composes multiple precomputed visualization products into a
 single standardized reporting page. It operates entirely within the rENM

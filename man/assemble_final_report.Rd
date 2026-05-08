@@ -51,10 +51,6 @@ the cover page. Optionally prepends a front matter PDF and/or
 appends an appendix PDF sourced from rENM.reports.
 }
 \details{
-This function is part of the rENM framework's processing pipeline
-and operates within the project directory structure defined by
-\code{rENM_project_dir()}.
-
 By default, a fixed set of pages is assembled in a predefined order.
 Users may override this behavior via the \code{pages} argument to:
 \itemize{

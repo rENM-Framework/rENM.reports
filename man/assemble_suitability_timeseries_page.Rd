@@ -65,10 +65,6 @@ Builds a single-page PDF that vertically stacks a collection of suitability
 maps above a shared caption with controlled spacing and proportional scaling.
 }
 \details{
-This function is part of the rENM framework's processing pipeline
-and operates within the project directory structure defined by
-rENM_project_dir().
-
 \strong{Pipeline context}
 For a given species alpha code (\code{alpha_code}), this function builds a
 single-page PDF that stacks:

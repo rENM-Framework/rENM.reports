@@ -66,10 +66,6 @@ several montages per page, and export them as PDF, DOCX, and PNG. Designed
 for variable-contribution reporting in the rENM workflow.
 }
 \details{
-This function is part of the rENM framework's processing pipeline  
-and operates within the project directory structure defined by  
-rENM_project_dir().
-
 \strong{Pipeline steps}
 \itemize{
   \item 1. Read the variable list from  
