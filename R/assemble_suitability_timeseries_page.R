@@ -265,7 +265,7 @@ assemble_suitability_timeseries_page <- function(alpha_code,
     "Processing summary (assemble_suitability_timeseries_page)",
     paste("Alpha code:", code),
     paste("Output:", out_pdf_path),
-    sep = "\n"
+    "\n"
   ), file = log_file, append = TRUE)
   
   invisible(out_pdf_path)
