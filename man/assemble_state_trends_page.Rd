@@ -94,9 +94,9 @@ Character. Invisibly returns the output PDF file path.
 
 Side effects:
 \itemize{
-  \item Writes a PDF file to the project directory.
-  \item Creates output directories if they do not exist.
-  \item Emits a console message indicating the output path.
+\item Writes a PDF file to the project directory.
+\item Creates output directories if they do not exist.
+\item Emits a console message indicating the output path.
 }
 }
 \description{
@@ -127,34 +127,34 @@ The function writes a single-page PDF to:
 
 \strong{Layout and composition}
 \itemize{
-  \item Two top-aligned maps (State Analysis and Hotspots) are placed under
-        a configurable top margin.
-  \item The map row can be narrowed and centered using
-        \code{map_width_factor}.
-  \item A summary table is placed exactly \code{v_gap_in} inches below the
-        taller of the two maps.
-  \item The table can be narrowed and centered using
-        \code{table_width_factor}.
-  \item Layout dimensions are controlled in inches and converted to pixels
-        using the specified DPI.
+\item Two top-aligned maps (State Analysis and Hotspots) are placed under
+a configurable top margin.
+\item The map row can be narrowed and centered using
+\code{map_width_factor}.
+\item A summary table is placed exactly \code{v_gap_in} inches below the
+taller of the two maps.
+\item The table can be narrowed and centered using
+\code{table_width_factor}.
+\item Layout dimensions are controlled in inches and converted to pixels
+using the specified DPI.
 }
 
 \strong{Table rendering}
 \itemize{
-  \item If \code{prefer_table_pdf = TRUE}, the table is read from PDF using
-        \code{magick::image_read_pdf()} and rasterized at
-        \code{table_pdf_dpi} (for example, 600) to improve text clarity.
-  \item If using a PNG, \code{table_png_supersample} (for example, 2 for
-        200 percent) increases resolution prior to fitting.
-  \item Optional sharpening can be applied using
-        \code{table_sharpen = TRUE}.
+\item If \code{prefer_table_pdf = TRUE}, the table is read from PDF using
+\code{magick::image_read_pdf()} and rasterized at
+\code{table_pdf_dpi} (for example, 600) to improve text clarity.
+\item If using a PNG, \code{table_png_supersample} (for example, 2 for
+200 percent) increases resolution prior to fitting.
+\item Optional sharpening can be applied using
+\code{table_sharpen = TRUE}.
 }
 
 \strong{Trimming}
 \itemize{
-  \item Uniform borders are trimmed from maps and optionally from the
-        table to remove hidden padding.
-  \item Trimming uses a tolerance defined by \code{trim_fuzz}.
+\item Uniform borders are trimmed from maps and optionally from the
+table to remove hidden padding.
+\item Trimming uses a tolerance defined by \code{trim_fuzz}.
 }
 
 \strong{Methods}

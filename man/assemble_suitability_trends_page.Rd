@@ -48,12 +48,12 @@ the caption. Default 0.25.}
 \value{
 Character. Invisibly returns the output PDF path.
 \itemize{
-  \item Output file written to:
-    \code{<project_dir>/runs/<alpha_code>/Summaries/pages/}
-    "<alpha_code>-Suitability-Trends.pdf"
-  \item Appends processing summary to:
-    \code{<project_dir>/runs/<alpha_code>/}
-    \code{_log.txt}
+\item Output file written to:
+\code{<project_dir>/runs/<alpha_code>/Summaries/pages/}
+"<alpha_code>-Suitability-Trends.pdf"
+\item Appends processing summary to:
+\code{<project_dir>/runs/<alpha_code>/}
+\code{_log.txt}
 }
 }
 \description{
@@ -64,18 +64,18 @@ change trend map (acceleration/deceleration), and a caption.
 \strong{Pipeline context}
 Produces a single-page PDF with:
 \itemize{
-  \item Top row:
-    \itemize{
-      \item (A) "<ALPHA>-Suitability-Trend.png"
-      \item (B) "<ALPHA>-Suitability-Change-Trend.png", side-by-side.
-    }
-  \item Bottom:
-    \itemize{
-      \item (C) A fixed, shared caption PDF included with the
-      rENM.reports package:
-      "inst/captions/suitability_trend_caption.pdf"
-      (accessed via system.file()).
-    }
+\item Top row:
+\itemize{
+\item (A) "\if{html}{\out{<ALPHA>}}-Suitability-Trend.png"
+\item (B) "\if{html}{\out{<ALPHA>}}-Suitability-Change-Trend.png", side-by-side.
+}
+\item Bottom:
+\itemize{
+\item (C) A fixed, shared caption PDF included with the
+rENM.reports package:
+"inst/captions/suitability_trend_caption.pdf"
+(accessed via system.file()).
+}
 }
 
 The caption is rasterized via pdftools at high DPI to preserve
@@ -84,30 +84,30 @@ never stretched (aspect ratio preserved).
 
 \strong{Inputs}
 \itemize{
-  \item Caption PDF is read directly from installed package resources
-  (no staging).
-  \item A and B are read as PNG files from:
-    \code{<project_dir>/runs/<alpha_code>/Trends/suitability/}
+\item Caption PDF is read directly from installed package resources
+(no staging).
+\item A and B are read as PNG files from:
+\code{<project_dir>/runs/<alpha_code>/Trends/suitability/}
 }
 
 \strong{Processing steps}
 \itemize{
-  \item Reads the caption PDF directly from the installed package
-  resources (no staging).
-  \item Reads A + B (PNG) and rasterizes C (PDF) using
-  pdftools::pdf_convert() at a specified caption_dpi (default 600).
-  \item Scales the caption down only if wider than the content area;
-  otherwise draws at native size, centered.
-  \item Composites everything onto a Letter page and writes:
-    \code{<project_dir>/runs/<alpha_code>/Summaries/pages/}
-    "<alpha_code>-Suitability-Trends.pdf".
+\item Reads the caption PDF directly from the installed package
+resources (no staging).
+\item Reads A + B (PNG) and rasterizes C (PDF) using
+pdftools::pdf_convert() at a specified caption_dpi (default 600).
+\item Scales the caption down only if wider than the content area;
+otherwise draws at native size, centered.
+\item Composites everything onto a Letter page and writes:
+\code{<project_dir>/runs/<alpha_code>/Summaries/pages/}
+"<alpha_code>-Suitability-Trends.pdf".
 }
 
 \strong{Outputs}
 \itemize{
-  \item Output PDF written to:
-    \code{<project_dir>/runs/<alpha_code>/Summaries/pages/}
-    "<alpha_code>-Suitability-Trends.pdf"
+\item Output PDF written to:
+\code{<project_dir>/runs/<alpha_code>/Summaries/pages/}
+"<alpha_code>-Suitability-Trends.pdf"
 }
 
 \strong{Methods}

@@ -12,20 +12,20 @@ gather_suitability_trend_stats(alpha_code)
 \value{
 Invisibly returns a data.frame with the following columns:
 \itemize{
-  \item state: Character. Two-letter state abbreviation.
-  \item state_area: Numeric. State area in square kilometers.
-  \item range_area: Numeric. Area of species range.
-  \item range_pct: Numeric. Percent of state occupied by range.
-  \item pos_pct: Numeric. Percent of positive trend area.
-  \item neg_pct: Numeric. Percent of negative trend area.
-  \item hotspot_area: Numeric. Area classified as hotspot.
-  \item hotspot_pct: Numeric. Percent of state as hotspot.
+\item state: Character. Two-letter state abbreviation.
+\item state_area: Numeric. State area in square kilometers.
+\item range_area: Numeric. Area of species range.
+\item range_pct: Numeric. Percent of state occupied by range.
+\item pos_pct: Numeric. Percent of positive trend area.
+\item neg_pct: Numeric. Percent of negative trend area.
+\item hotspot_area: Numeric. Area classified as hotspot.
+\item hotspot_pct: Numeric. Percent of state as hotspot.
 }
 
 Side effects:
 \itemize{
-  \item Writes a summary CSV file to the suitability directory.
-  \item Appends a processing summary block to the run log file.
+\item Writes a summary CSV file to the suitability directory.
+\item Appends a processing summary block to the run log file.
 }
 }
 \description{
@@ -49,12 +49,12 @@ Input files must exist at:
 
 \strong{Processing steps}
 \itemize{
-  \item Reads both input CSV files using \code{readr::read_csv}.
-  \item Verifies required columns are present in each dataset.
-  \item Sorts both inputs alphabetically by state abbreviation.
-  \item Merges datasets using a left join on state abbreviation.
-  \item Converts relevant columns to numeric values.
-  \item Assembles a standardized summary table with key metrics.
+\item Reads both input CSV files using \code{readr::read_csv}.
+\item Verifies required columns are present in each dataset.
+\item Sorts both inputs alphabetically by state abbreviation.
+\item Merges datasets using a left join on state abbreviation.
+\item Converts relevant columns to numeric values.
+\item Assembles a standardized summary table with key metrics.
 }
 
 \strong{Outputs}
@@ -70,20 +70,20 @@ Appends a processing summary to:
 
 using the eBird-standard format:
 \itemize{
-  \item Always skips one blank line before the 72-dash separator.
-  \item Does not include an ending separator line.
-  \item Omits all raster-related fields.
-  \item Includes: Timestamp, Alpha code, Outputs saved,
-  Total elapsed, and Output file.
+\item Always skips one blank line before the 72-dash separator.
+\item Does not include an ending separator line.
+\item Omits all raster-related fields.
+\item Includes: Timestamp, Alpha code, Outputs saved,
+Total elapsed, and Output file.
 }
 
 \strong{Data requirements}
 \itemize{
-  \item First file must contain:
-  STATE, GAP.RANGE.AREA, GAP.RANGE.PCT, GAP.RANGE.POS.PCT,
-  and either GAPP.RANGE.NEG.PCT or GAP.RANGE.NEG.PCT.
-  \item Second file must contain:
-  abbr, state_area_km2, hotspot_area_km2, hotspot_pct_of_state.
+\item First file must contain:
+STATE, GAP.RANGE.AREA, GAP.RANGE.PCT, GAP.RANGE.POS.PCT,
+and either GAPP.RANGE.NEG.PCT or GAP.RANGE.NEG.PCT.
+\item Second file must contain:
+abbr, state_area_km2, hotspot_area_km2, hotspot_pct_of_state.
 }
 }
 \examples{

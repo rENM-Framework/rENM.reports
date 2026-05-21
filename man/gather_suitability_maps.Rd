@@ -34,16 +34,16 @@ magick::image_trim to remove light halos.}
 \value{
 A named list returned invisibly with the following elements:
 \itemize{
-  \item png: Character. Absolute file path to PNG output.
-  \item pdf: Character. Absolute file path to PDF output.
-  \item docx: Character. Absolute file path to DOCX output.
+\item png: Character. Absolute file path to PNG output.
+\item pdf: Character. Absolute file path to PDF output.
+\item docx: Character. Absolute file path to DOCX output.
 }
 
 Side effects:
 \itemize{
-  \item Writes PNG, PDF, and DOCX files to the summaries directory.
-  \item Appends a processing summary to:
-  \code{<project_dir>/runs/<alpha_code>/_log.txt}
+\item Writes PNG, PDF, and DOCX files to the summaries directory.
+\item Appends a processing summary to:
+\code{<project_dir>/runs/<alpha_code>/_log.txt}
 }
 }
 \description{
@@ -67,22 +67,22 @@ for year in 1980, 1985, ..., 2020 (9 images total).
 
 \strong{Processing steps}
 \itemize{
-  \item Reads and trims each tile to remove stray white borders using
-  \code{magick::image_trim}.
-  \item Creates a 3x3 montage with small gutters.
-  \item Trims the montage again to tighten outer bounds.
-  \item Scales the montage to the content width (6.5 inches at 300 dpi).
-  \item If the montage exceeds the content height (9 inches at 300 dpi),
-  crops excess from the bottom while preserving the top.
-  \item Composites onto a white Letter-sized page.
+\item Reads and trims each tile to remove stray white borders using
+\code{magick::image_trim}.
+\item Creates a 3x3 montage with small gutters.
+\item Trims the montage again to tighten outer bounds.
+\item Scales the montage to the content width (6.5 inches at 300 dpi).
+\item If the montage exceeds the content height (9 inches at 300 dpi),
+crops excess from the bottom while preserving the top.
+\item Composites onto a white Letter-sized page.
 }
 
 \strong{Outputs}
 The final page is exported as:
 \itemize{
-  \item A one-page PNG (<alpha_code>-Suitability-Maps.png)
-  \item A one-page PDF (<alpha_code>-Suitability-Maps.pdf)
-  \item A one-page DOCX (<alpha_code>-Suitability-Maps.docx)
+\item A one-page PNG (<alpha_code>-Suitability-Maps.png)
+\item A one-page PDF (<alpha_code>-Suitability-Maps.pdf)
+\item A one-page DOCX (<alpha_code>-Suitability-Maps.docx)
 }
 
 All files are written to:

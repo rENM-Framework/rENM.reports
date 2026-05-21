@@ -46,8 +46,8 @@ inches. Default 0.50; set to 0 for no gap.}
 \item{trim_fuzz}{Numeric. Fuzz percentage for
 \code{magick::image_trim()}.
 \itemize{
-  \item \code{0}   trims only perfectly uniform borders.
-  \item \code{5-10} often works for anti-aliased white backgrounds.
+\item \code{0}   trims only perfectly uniform borders.
+\item \code{5-10} often works for anti-aliased white backgrounds.
 }
 Default 5.}
 
@@ -57,9 +57,9 @@ Default \code{TRUE}.}
 \value{
 Invisible \code{Character}. Full file path of the assembled PDF.
 \itemize{
-  \item Structure: length-one character vector.
-  \item Side effects: writes the PDF to disk and appends a processing
-        summary to the species log file.
+\item Structure: length-one character vector.
+\item Side effects: writes the PDF to disk and appends a processing
+summary to the species log file.
 }
 }
 \description{
@@ -69,39 +69,39 @@ maps above a shared caption with controlled spacing and proportional scaling.
 \details{
 \strong{Pipeline context}
 \itemize{
-  \item Input map: per-species PNG created earlier in the reporting workflow.
-  \item Input caption: shared PDF stored in the \code{rENM.reports} package.
-  \item Output page: PDF saved under each species' \code{Summaries/pages/}
-        directory.
+\item Input map: per-species PNG created earlier in the reporting workflow.
+\item Input caption: shared PDF stored in the \code{rENM.reports} package.
+\item Output page: PDF saved under each species' \code{Summaries/pages/}
+directory.
 }
 
 \strong{Inputs}
 \itemize{
-  \item Range map PNG (per species):
-    \code{<project_dir>/runs/<alpha_code>/Summaries/maps/<alpha_code>-Range-Maps.png}
-  \item Range time-series caption PDF (first page only, shared):
-    \code{system.file("captions", "range_timeseries_caption.pdf",
+\item Range map PNG (per species):
+\code{<project_dir>/runs/<alpha_code>/Summaries/maps/<alpha_code>-Range-Maps.png}
+\item Range time-series caption PDF (first page only, shared):
+\code{system.file("captions", "range_timeseries_caption.pdf",
                       package = "rENM.reports")}
 }
 
 \strong{Outputs}
 \itemize{
-  \item Assembled PDF page:
-    \code{<project_dir>/runs/<alpha_code>/Summaries/pages/<alpha_code>-Range-TimeSeries.pdf}
-  \item Log entry appended to:
-    \code{<project_dir>/runs/<alpha_code>/_log.txt}
+\item Assembled PDF page:
+\code{<project_dir>/runs/<alpha_code>/Summaries/pages/<alpha_code>-Range-TimeSeries.pdf}
+\item Log entry appended to:
+\code{<project_dir>/runs/<alpha_code>/_log.txt}
 }
 
 \strong{Methods}
 \itemize{
-  \item Rasterization: \code{pdftools::pdf_render_page()} at the requested
-        \code{dpi}.
-  \item Margin trimming: \code{magick::image_trim()} with \code{trim_fuzz}
-        tolerance.
-  \item Scaling: width fractions applied to
-        \code{target_content_width_in * dpi} pixels.
-  \item Gap: white spacer of \code{gap_between_in * dpi} pixels inserted
-        between map and caption.
+\item Rasterization: \code{pdftools::pdf_render_page()} at the requested
+\code{dpi}.
+\item Margin trimming: \code{magick::image_trim()} with \code{trim_fuzz}
+tolerance.
+\item Scaling: width fractions applied to
+\code{target_content_width_in * dpi} pixels.
+\item Gap: white spacer of \code{gap_between_in * dpi} pixels inserted
+between map and caption.
 }
 
 \strong{Data requirements}

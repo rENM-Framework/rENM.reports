@@ -53,9 +53,9 @@ Character. Invisibly returns the output PDF file path.
 
 Side effects:
 \itemize{
-  \item Writes a PDF file to the project directory.
-  \item Creates output directories if they do not exist.
-  \item Appends a processing summary to the run log file.
+\item Writes a PDF file to the project directory.
+\item Creates output directories if they do not exist.
+\item Appends a processing summary to the run log file.
 }
 }
 \description{
@@ -88,11 +88,11 @@ separator, no trailing separator).
 
 \strong{Layout and scaling}
 \itemize{
-  \item Top:    (A) \code{<ALPHA>-Suitability-Trend-With-Centroids.png}
-  \item Bottom: (B) \code{<ALPHA>-Centroid-Trend-Summary.pdf}
-  \item Map scaled to \code{map_width_fraction x content width}
-  \item Table scaled to \code{table_width_fraction x content width}
-  \item Both preserve aspect ratio and are centered horizontally.
+\item Top:    (A) \code{<ALPHA>-Suitability-Trend-With-Centroids.png}
+\item Bottom: (B) \code{<ALPHA>-Centroid-Trend-Summary.pdf}
+\item Map scaled to \code{map_width_fraction x content width}
+\item Table scaled to \code{table_width_fraction x content width}
+\item Both preserve aspect ratio and are centered horizontally.
 }
 
 \strong{Methods}

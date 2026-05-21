@@ -13,15 +13,15 @@ create_suitability_trend_summary_table(alpha_code)
 \value{
 A named list returned invisibly with the following elements:
 \itemize{
-  \item xlsx: Character. Absolute path to Excel output file.
-  \item png: Character. Absolute path to PNG file or NA if skipped.
-  \item pdf: Character. Absolute path to PDF file or NA if skipped.
+\item xlsx: Character. Absolute path to Excel output file.
+\item png: Character. Absolute path to PNG file or NA if skipped.
+\item pdf: Character. Absolute path to PDF file or NA if skipped.
 }
 
 Side effects:
 \itemize{
-  \item Writes formatted Excel, PNG, and PDF outputs.
-  \item Appends a processing summary block to the run log file.
+\item Writes formatted Excel, PNG, and PDF outputs.
+\item Appends a processing summary block to the run log file.
 }
 }
 \description{
@@ -41,14 +41,14 @@ Input CSV must exist at:
 
 \strong{Processing steps}
 \itemize{
-  \item Reads the summary CSV using \code{readr::read_csv}.
-  \item Verifies required columns are present.
-  \item Converts numeric columns safely.
-  \item Renames columns for presentation.
-  \item Builds a formatted Excel workbook using \code{openxlsx}.
-  \item Creates a styled table using \code{gt}.
-  \item Optionally exports PNG using webshot2 if available.
-  \item Optionally exports PDF using pagedown if available.
+\item Reads the summary CSV using \code{readr::read_csv}.
+\item Verifies required columns are present.
+\item Converts numeric columns safely.
+\item Renames columns for presentation.
+\item Builds a formatted Excel workbook using \code{openxlsx}.
+\item Creates a styled table using \code{gt}.
+\item Optionally exports PNG using webshot2 if available.
+\item Optionally exports PDF using pagedown if available.
 }
 
 \strong{Outputs}
@@ -57,14 +57,14 @@ Output files are written to:
 \code{<project_dir>/runs/<alpha_code>/Summaries/tables}
 
 \itemize{
-  \item Excel (.xlsx)
-  \item PNG (.png) if webshot2 is available
-  \item PDF (.pdf) if pagedown is available
+\item Excel (.xlsx)
+\item PNG (.png) if webshot2 is available
+\item PDF (.pdf) if pagedown is available
 }
 
 Table columns are presented as:
-State, State Area, Range Area, Range \%, Positive \%, Negative \%,
-Hot Spot Area, Hot Spot \%.
+State, State Area, Range Area, Range \\%, Positive \\%, Negative \\%,
+Hot Spot Area, Hot Spot \\%.
 
 \strong{Log behavior}
 Appends a processing summary to:

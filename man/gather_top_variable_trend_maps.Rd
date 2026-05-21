@@ -48,16 +48,16 @@ path described in \strong{Pipeline steps} is used.}
 \value{
 A \code{list} with the following elements:
 \itemize{
-  \item \code{png}: Character vector of page-level PNG paths.
-  \item \code{pdf}: Character string giving the PDF path.
-  \item \code{docx}: Character string giving the DOCX path.
-}  
+\item \code{png}: Character vector of page-level PNG paths.
+\item \code{pdf}: Character string giving the PDF path.
+\item \code{docx}: Character string giving the DOCX path.
+}
 Side effects:
 \itemize{
-  \item Files are written to
-        \code{runs/<alpha_code>/Summaries/maps/}.
-  \item A log block is appended to
-        \code{runs/<alpha_code>/_log.txt}.
+\item Files are written to
+\code{runs/<alpha_code>/Summaries/maps/}.
+\item A log block is appended to
+\code{runs/<alpha_code>/_log.txt}.
 }
 }
 \description{
@@ -68,58 +68,58 @@ for variable-contribution reporting in the rENM workflow.
 \details{
 \strong{Pipeline steps}
 \itemize{
-  \item 1. Read the variable list from  
-        \code{<rENM_project_dir()>/runs/<alpha_code>/Trends/variables/}
-        \code{<alpha_code>-Variable-Contributions-BR-Stats.csv}  
-        (must contain \code{Variable}; \code{pd_slope} is optional).
-  \item 2. For every variable \code{<var>} collect two PNGs  
-        (case-insensitive, punctuation-agnostic matching):  
-        \itemize{
-          \item A (trend): \code{<base>-trends/<var>.png}  
-          \item B (rate) : \code{<base>-trends-rate/<var>.png}  
-        }  
-        If \code{base_dir == "auto"} both \code{"m2"} and \code{"mc"}
-        directories are tried.
-  \item 3. Build an A | B montage for each variable with generous spacing.
-  \item 4. Stack \code{per_page} montages per page.
-  \item 5. Trim, down-scale, and vertically crop overflow.
-  \item 6. Composite onto a white US Letter page  
-        (8.5 x 11 in, 1 in margins).
-  \item 7. Export a multipage PDF, a matching DOCX, and page-level PNGs
-        named \code{-p01}, \code{-p02}, ...
+\item 1. Read the variable list from
+\code{<rENM_project_dir()>/runs/<alpha_code>/Trends/variables/}
+\code{<alpha_code>-Variable-Contributions-BR-Stats.csv}
+(must contain \code{Variable}; \code{pd_slope} is optional).
+\item 2. For every variable \code{<var>} collect two PNGs
+(case-insensitive, punctuation-agnostic matching):
+\itemize{
+\item A (trend): \code{<base>-trends/<var>.png}
+\item B (rate) : \code{<base>-trends-rate/<var>.png}
+}
+If \code{base_dir == "auto"} both \code{"m2"} and \code{"mc"}
+directories are tried.
+\item 3. Build an A | B montage for each variable with generous spacing.
+\item 4. Stack \code{per_page} montages per page.
+\item 5. Trim, down-scale, and vertically crop overflow.
+\item 6. Composite onto a white US Letter page
+(8.5 x 11 in, 1 in margins).
+\item 7. Export a multipage PDF, a matching DOCX, and page-level PNGs
+named \code{-p01}, \code{-p02}, ...
 }
 
-\strong{Highlight rule}  
-If the CSV includes \code{pd_slope}, any variable with  
+\strong{Highlight rule}
+If the CSV includes \code{pd_slope}, any variable with
 \code{\{pd_slope >= 90\}} receives a dark-blue strip along the left edge.
 
 \strong{Layout and styling}
 \itemize{
-  \item Each A <-> B pair is slightly down-scaled to add whitespace.
-  \item The gutter between A and B, as well as row spacing, is widened.
-  \item The full column is scaled to 96\% of the content width and centred.
-  \item Excess height beyond the content area is cropped from the bottom.
+\item Each A <-> B pair is slightly down-scaled to add whitespace.
+\item The gutter between A and B, as well as row spacing, is widened.
+\item The full column is scaled to 96\\% of the content width and centred.
+\item Excess height beyond the content area is cropped from the bottom.
 }
 
-\strong{CRAN compliance}  
+\strong{CRAN compliance}
 All hard-coded paths have been removed; the project root is obtained via
 \code{rENM_project_dir()}.
 
 \strong{Inputs}
 \itemize{
-  \item Variable CSV (with optional \code{pd_slope}) as described above.
-  \item Trend and rate PNGs residing in the two
-        \code{<base>-trends*} folders under
-        \code{<rENM_project_dir()>/data/merra/}.
+\item Variable CSV (with optional \code{pd_slope}) as described above.
+\item Trend and rate PNGs residing in the two
+\code{<base>-trends*} folders under
+\code{<rENM_project_dir()>/data/merra/}.
 }
 
 \strong{Outputs}
 \itemize{
-  \item \code{<alpha_code>-Variable-Trend-Maps.pdf}
-  \item \code{<alpha_code>-Variable-Trend-Maps.docx}
-  \item \code{<alpha_code>-Variable-Trend-Maps-pXX.png}
-  \item A processing summary appended to
-        \code{runs/<alpha_code>/_log.txt}
+\item \code{<alpha_code>-Variable-Trend-Maps.pdf}
+\item \code{<alpha_code>-Variable-Trend-Maps.docx}
+\item \code{<alpha_code>-Variable-Trend-Maps-pXX.png}
+\item A processing summary appended to
+\code{runs/<alpha_code>/_log.txt}
 }
 }
 \examples{

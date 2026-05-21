@@ -19,15 +19,15 @@ to the console.}
 \value{
 A named list (invisibly returned):
 \itemize{
-  \item \code{caption_page} – full file path to the staged caption PDF
-  \item \code{maps_page}    – full file path to the staged maps PDF
+\item \code{caption_page} – full file path to the staged caption PDF
+\item \code{maps_page}    – full file path to the staged maps PDF
 }
 Side effects:
 \itemize{
-  \item Two PDF files copied into
-    \code{<project>/runs/<alpha_code>/Summaries/pages}
-  \item Processing summary appended to
-    \code{<project>/runs/<alpha_code>/_log.txt}
+\item Two PDF files copied into
+\code{<project>/runs/<alpha_code>/Summaries/pages}
+\item Processing summary appended to
+\code{<project>/runs/<alpha_code>/_log.txt}
 }
 }
 \description{
@@ -37,41 +37,41 @@ patterns of the top contributing variables.
 \details{
 \strong{Pipeline context}
 \itemize{
-  \item Copies a shared caption PDF (A) and a species-specific
-    variable-trend-maps PDF (B) into the \code{Summaries/pages}
-    directory for the target species.
-  \item Ensures consistent naming so that downstream report builders
-    pick up both pages automatically.
+\item Copies a shared caption PDF (A) and a species-specific
+variable-trend-maps PDF (B) into the \code{Summaries/pages}
+directory for the target species.
+\item Ensures consistent naming so that downstream report builders
+pick up both pages automatically.
 }
 
 \strong{Inputs}
 \itemize{
-  \item Shared caption PDF (A):\cr
-    \code{system.file("captions", "variable_trend_maps_caption.pdf", package = "rENM.reports")}
-  \item Species maps PDF (B):\cr
-    \code{file.path(rENM_project_dir(), "runs", <alpha_code>,}
-    \code{"Summaries", "maps",}
-    \code{paste0(<alpha_code>, "-Variable-Trend-Maps.pdf"))}
+\item Shared caption PDF (A):\cr
+\code{system.file("captions", "variable_trend_maps_caption.pdf", package = "rENM.reports")}
+\item Species maps PDF (B):\cr
+\code{file.path(rENM_project_dir(), "runs", <alpha_code>,}
+\code{"Summaries", "maps",}
+\code{paste0(<alpha_code>, "-Variable-Trend-Maps.pdf"))}
 }
 
 \strong{Outputs}
 \itemize{
-  \item Caption copy:\cr
-    \code{file.path(rENM_project_dir(), "runs", <alpha_code>,}
-    \code{"Summaries", "pages",}
-    \code{paste0(<alpha_code>, "-Variable-Trend-Maps1.pdf"))}
-  \item Maps copy:\cr
-    \code{file.path(rENM_project_dir(), "runs", <alpha_code>,}
-    \code{"Summaries", "pages",}
-    \code{paste0(<alpha_code>, "-Variable-Trend-Maps2.pdf"))}
-  \item Processing summary appended to:\cr
-    \code{file.path(rENM_project_dir(), "runs", <alpha_code>, "_log.txt")}
+\item Caption copy:\cr
+\code{file.path(rENM_project_dir(), "runs", <alpha_code>,}
+\code{"Summaries", "pages",}
+\code{paste0(<alpha_code>, "-Variable-Trend-Maps1.pdf"))}
+\item Maps copy:\cr
+\code{file.path(rENM_project_dir(), "runs", <alpha_code>,}
+\code{"Summaries", "pages",}
+\code{paste0(<alpha_code>, "-Variable-Trend-Maps2.pdf"))}
+\item Processing summary appended to:\cr
+\code{file.path(rENM_project_dir(), "runs", <alpha_code>, "_log.txt")}
 }
 
 \strong{Methods}
 \itemize{
-  \item Pure file staging via \code{file.copy()} with optional overwrite.
-  \item No PDF merging, rasterization, or resizing.
+\item Pure file staging via \code{file.copy()} with optional overwrite.
+\item No PDF merging, rasterization, or resizing.
 }
 }
 \examples{

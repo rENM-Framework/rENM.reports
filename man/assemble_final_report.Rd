@@ -21,8 +21,8 @@ assemble_final_report(
 \item{pages}{Character vector. Optional. Specifies which pages to
 include and their order. May be either:
 \itemize{
-  \item full filenames (e.g., "BETH-Suitability-Trends.pdf"), or
-  \item short keys (see Details; e.g., "Suitability-Trends")
+\item full filenames (e.g., "BETH-Suitability-Trends.pdf"), or
+\item short keys (see Details; e.g., "Suitability-Trends")
 }
 If \code{NULL} (default), the standard page set and order are used.}
 
@@ -54,9 +54,9 @@ appends an appendix PDF sourced from rENM.reports.
 By default, a fixed set of pages is assembled in a predefined order.
 Users may override this behavior via the \code{pages} argument to:
 \itemize{
-  \item reorder pages
-  \item omit pages
-  \item include a subset of pages
+\item reorder pages
+\item omit pages
+\item include a subset of pages
 }
 
 Optional front matter and appendix PDFs must be located in
@@ -64,19 +64,19 @@ Optional front matter and appendix PDFs must be located in
 
 \strong{Inputs}
 \itemize{
-  \item Pre-generated page PDFs in
-        \code{<rENM_project_dir()>/runs/<alpha_code>/Summaries/pages/}
-  \item Optional front matter / appendix PDFs in
-        \code{rENM.reports::inst/resources/}
+\item Pre-generated page PDFs in
+\code{<rENM_project_dir()>/runs/<alpha_code>/Summaries/pages/}
+\item Optional front matter / appendix PDFs in
+\code{rENM.reports::inst/resources/}
 }
 
 \strong{Outputs}
 \itemize{
-  \item Final report:
-        \code{<rENM_project_dir()>/runs/<alpha_code>/Summaries/
+\item Final report:
+\code{<rENM_project_dir()>/runs/<alpha_code>/Summaries/
         <alpha_code>-Final-Report.pdf}
-  \item Processing summary appended to
-        \code{<rENM_project_dir()>/runs/<alpha_code>/_log.txt}
+\item Processing summary appended to
+\code{<rENM_project_dir()>/runs/<alpha_code>/_log.txt}
 }
 }
 \examples{

@@ -55,9 +55,9 @@ Character. Invisibly returns the output PDF file path:
 
 Side effects:
 \itemize{
-  \item Writes a PDF file to the project directory
-  \item Creates output directories if they do not exist
-  \item Appends a processing summary to the run log file
+\item Writes a PDF file to the project directory
+\item Creates output directories if they do not exist
+\item Appends a processing summary to the run log file
 }
 }
 \description{
@@ -68,29 +68,30 @@ maps above a shared caption with controlled spacing and proportional scaling.
 \strong{Pipeline context}
 For a given species alpha code (\code{alpha_code}), this function builds a
 single-page PDF that stacks:
-
-  1. The suitability contact-sheet map PNG (A) on the top of the page:
-     \code{<project_dir>/runs/<alpha_code>/Summaries/maps/<alpha_code>-Suitability-Maps.png}
-  2. A shared suitability time-series caption PDF (B; first page only)
-     underneath:
-     \code{system.file("captions",
+\enumerate{
+\item The suitability contact-sheet map PNG (A) on the top of the page:
+\code{<project_dir>/runs/<alpha_code>/Summaries/maps/<alpha_code>-Suitability-Maps.png}
+\item A shared suitability time-series caption PDF (B; first page only)
+underneath:
+\code{system.file("captions",
      "suitability_timeseries_caption.pdf",
      package = "rENM.reports")}
+}
 
 Both elements are:
 \itemize{
-  \item Converted to raster images
-  \item Trimmed to remove uniform white margins via
-        \code{magick::image_trim()}
-  \item Scaled so that, when \code{map_width_fraction = 1} and
-        \code{caption_width_fraction = 1}, the visible width of both (A)
-        and (B) is \code{target_content_width_in} inches (default 6),
-        subject to the page interior width
-  \item Separated by an adjustable vertical gap of
-        \code{gap_between_in} inches
-  \item Stacked vertically (map above gap, gap above caption)
-  \item Placed on a white Letter-sized page (8.5 x 11 inches) with
-        uniform margins
+\item Converted to raster images
+\item Trimmed to remove uniform white margins via
+\code{magick::image_trim()}
+\item Scaled so that, when \code{map_width_fraction = 1} and
+\code{caption_width_fraction = 1}, the visible width of both (A)
+and (B) is \code{target_content_width_in} inches (default 6),
+subject to the page interior width
+\item Separated by an adjustable vertical gap of
+\code{gap_between_in} inches
+\item Stacked vertically (map above gap, gap above caption)
+\item Placed on a white Letter-sized page (8.5 x 11 inches) with
+uniform margins
 }
 
 Trimming the source rasters first ensures that any extra baked-in white

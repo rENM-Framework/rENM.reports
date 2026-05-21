@@ -12,15 +12,15 @@ create_variable_trend_summary_table(alpha_code)
 \value{
 A named list returned invisibly with the following elements:
 \itemize{
-  \item xlsx: Character. Absolute path to Excel output file.
-  \item png: Character. Absolute path to PNG output or NA if skipped.
-  \item pdf: Character. Absolute path to PDF output or NA if skipped.
+\item xlsx: Character. Absolute path to Excel output file.
+\item png: Character. Absolute path to PNG output or NA if skipped.
+\item pdf: Character. Absolute path to PDF output or NA if skipped.
 }
 
 Side effects:
 \itemize{
-  \item Writes Excel, PNG, and PDF files to disk.
-  \item Appends a processing summary block to the run log file.
+\item Writes Excel, PNG, and PDF files to disk.
+\item Appends a processing summary block to the run log file.
 }
 }
 \description{
@@ -40,23 +40,23 @@ Input file must exist at:
 
 \strong{Processing steps}
 \itemize{
-  \item Reads the variable-trend CSV using \code{readr::read_csv}.
-  \item Verifies required columns are present.
-  \item Resolves CI column names:
-  slope_ci_lower or slope_ci_low, and slope_ci_upper or slope_ci_high.
-  \item Preserves row order exactly as in the input CSV.
-  \item Assigns significance marks based on pd_slope:
-  \itemize{
-    \item *** if pd_slope >= 95
-    \item **  if 90 <= pd_slope < 95
-    \item *   if 85 <= pd_slope < 90
-  }
-  \item Appends significance marks to variable names.
-  \item Converts numeric fields safely.
-  \item Builds a formatted Excel workbook using \code{openxlsx}.
-  \item Creates a styled table using \code{gt}.
-  \item Optionally exports PNG using webshot2 if available.
-  \item Optionally exports PDF using pagedown if available.
+\item Reads the variable-trend CSV using \code{readr::read_csv}.
+\item Verifies required columns are present.
+\item Resolves CI column names:
+slope_ci_lower or slope_ci_low, and slope_ci_upper or slope_ci_high.
+\item Preserves row order exactly as in the input CSV.
+\item Assigns significance marks based on pd_slope:
+\itemize{
+\item *** if pd_slope >= 95
+\item **  if 90 <= pd_slope < 95
+\item *   if 85 <= pd_slope < 90
+}
+\item Appends significance marks to variable names.
+\item Converts numeric fields safely.
+\item Builds a formatted Excel workbook using \code{openxlsx}.
+\item Creates a styled table using \code{gt}.
+\item Optionally exports PNG using webshot2 if available.
+\item Optionally exports PDF using pagedown if available.
 }
 
 \strong{Outputs}
@@ -65,28 +65,28 @@ Output files are written to:
 \code{<project_dir>/runs/<alpha_code>/Summaries/tables}
 
 \itemize{
-  \item Excel (.xlsx)
-  \item PNG (.png) if webshot2 is available
-  \item PDF (.pdf) if pagedown is available
+\item Excel (.xlsx)
+\item PNG (.png) if webshot2 is available
+\item PDF (.pdf) if pagedown is available
 }
 
 \strong{Column mapping}
 Output columns correspond to input columns:
 \itemize{
-  \item Variable <- Variable
-  \item Points <- n_points
-  \item Slope <- slope_mean
-  \item CI Low <- slope_ci_lower or slope_ci_low
-  \item CI High <- slope_ci_upper or slope_ci_high
-  \item PD <- pd_slope
-  \item ROPE % <- rope_slope_pct
+\item Variable <- Variable
+\item Points <- n_points
+\item Slope <- slope_mean
+\item CI Low <- slope_ci_lower or slope_ci_low
+\item CI High <- slope_ci_upper or slope_ci_high
+\item PD <- pd_slope
+\item ROPE \% <- rope_slope_pct
 }
 
 \strong{Formatting rules}
 \itemize{
-  \item Row order is preserved exactly as in the input CSV.
-  \item Variables with pd_slope >= 85 are bolded.
-  \item Significance marks are appended to variable names.
+\item Row order is preserved exactly as in the input CSV.
+\item Variables with pd_slope >= 85 are bolded.
+\item Significance marks are appended to variable names.
 }
 
 \strong{Log behavior}
@@ -96,9 +96,9 @@ Appends a processing summary to:
 
 using the eBird-standard format:
 \itemize{
-  \item One blank line before the 72-dash separator.
-  \item No ending separator line.
-  \item Reports all output files written.
+\item One blank line before the 72-dash separator.
+\item No ending separator line.
+\item Reports all output files written.
 }
 
 \strong{Data requirements}

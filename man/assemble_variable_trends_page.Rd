@@ -87,9 +87,9 @@ Character. Invisibly returns the output PDF file path.
 
 Side effects:
 \itemize{
-  \item Writes a PDF file to the project directory.
-  \item Creates output directories if they do not exist.
-  \item Appends a processing summary to the run log file.
+\item Writes a PDF file to the project directory.
+\item Creates output directories if they do not exist.
+\item Appends a processing summary to the run log file.
 }
 }
 \description{
@@ -119,23 +119,23 @@ Output file:
 
 \strong{Layout and scaling}
 \itemize{
-  \item Top: variable-contribution lines plot
-  \item Bottom: summary table
-  \item Plot is placed below the top margin
-  \item Table is placed exactly \code{v_gap_in} inches below the plot
-  \item Both elements are scaled proportionally and centered horizontally
-  \item No cropping is performed; only scaling
+\item Top: variable-contribution lines plot
+\item Bottom: summary table
+\item Plot is placed below the top margin
+\item Table is placed exactly \code{v_gap_in} inches below the plot
+\item Both elements are scaled proportionally and centered horizontally
+\item No cropping is performed; only scaling
 }
 
 \strong{Table rendering}
 \itemize{
-  \item By default, the table is read from PDF and rasterized at high DPI
-        using \code{magick::image_read_pdf()} for crisp text
-  \item If PDF is unavailable or \code{prefer_table_pdf = FALSE}, a PNG is
-        used instead
-  \item PNG tables may be supersampled using
-        \code{table_png_supersample} (for example, 2 = 200 percent)
-  \item Optional sharpening can be applied using \code{table_sharpen}
+\item By default, the table is read from PDF and rasterized at high DPI
+using \code{magick::image_read_pdf()} for crisp text
+\item If PDF is unavailable or \code{prefer_table_pdf = FALSE}, a PNG is
+used instead
+\item PNG tables may be supersampled using
+\code{table_png_supersample} (for example, 2 = 200 percent)
+\item Optional sharpening can be applied using \code{table_sharpen}
 }
 
 \strong{Logging}

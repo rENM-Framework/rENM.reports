@@ -26,14 +26,14 @@ create_centroid_trend_summary_table(
 \value{
 Invisibly returns a List with:
 \itemize{
-  \item \code{shift_df}: Data frame containing the one-row shift block.
-  \item \code{reg_df}: Data frame containing the two-row regression block.
-  \item \code{files}: Character vector of file paths written.
+\item \code{shift_df}: Data frame containing the one-row shift block.
+\item \code{reg_df}: Data frame containing the two-row regression block.
+\item \code{files}: Character vector of file paths written.
 }
 Side effects:
 \itemize{
-  \item Writes Excel, PNG, and PDF files to the project directory.
-  \item Appends a processing summary to the run-specific log file.
+\item Writes Excel, PNG, and PDF files to the project directory.
+\item Appends a processing summary to the run-specific log file.
 }
 }
 \description{
@@ -50,68 +50,68 @@ centroid velocity and regression outputs for a given species.
 \strong{Inputs}
 Reads CSV files from:
 \itemize{
-  \item \code{<project_dir>/runs/<ALPHA>/Trends/centroids/}
+\item \code{<project_dir>/runs/<ALPHA>/Trends/centroids/}
 }
 
 Expected inputs:
 \describe{
-  \item{Bioclimatic-Velocity}{
-    \code{<project_dir>/runs/<ALPHA>/Trends/centroids/}
-    \code{<ALPHA>-Bioclimatic-Velocity.csv}
-    with columns \code{start_lon}, \code{start_lat},
-    \code{end_lon}, \code{end_lat}, \code{distance_km},
-    \code{bearing_deg}, \code{velocity_km_per_yr}.
-  }
-  \item{Longitude-Summary}{
-    \code{<project_dir>/runs/<ALPHA>/Trends/centroids/}
-    \code{<ALPHA>-Centroids-Longitude-Summary.csv}
-    with columns \code{mean}, \code{ci_low}, \code{ci_high},
-    \code{pd}, \code{rope_pct}.
-  }
-  \item{Latitude-Summary}{
-    \code{<project_dir>/runs/<ALPHA>/Trends/centroids/}
-    \code{<ALPHA>-Centroids-Latitude-Summary.csv}
-    with the same columns as Longitude-Summary.
-  }
+\item{Bioclimatic-Velocity}{
+\code{<project_dir>/runs/<ALPHA>/Trends/centroids/}
+\code{<ALPHA>-Bioclimatic-Velocity.csv}
+with columns \code{start_lon}, \code{start_lat},
+\code{end_lon}, \code{end_lat}, \code{distance_km},
+\code{bearing_deg}, \code{velocity_km_per_yr}.
+}
+\item{Longitude-Summary}{
+\code{<project_dir>/runs/<ALPHA>/Trends/centroids/}
+\code{<ALPHA>-Centroids-Longitude-Summary.csv}
+with columns \code{mean}, \code{ci_low}, \code{ci_high},
+\code{pd}, \code{rope_pct}.
+}
+\item{Latitude-Summary}{
+\code{<project_dir>/runs/<ALPHA>/Trends/centroids/}
+\code{<ALPHA>-Centroids-Latitude-Summary.csv}
+with the same columns as Longitude-Summary.
+}
 }
 
 \strong{Outputs}
 Writes outputs to:
 \itemize{
-  \item \code{<project_dir>/runs/<ALPHA>/Summaries/tables/}
-        \code{<ALPHA>-Centroid-Trend-Summary.xlsx}
-        (always written)
-  \item \code{<project_dir>/runs/<ALPHA>/Summaries/tables/}
-        \code{<ALPHA>-Centroid-Trend-Summary.png}
-        (if optional graphics packages are available)
-  \item \code{<project_dir>/runs/<ALPHA>/Summaries/tables/}
-        \code{<ALPHA>-Centroid-Trend-Summary.pdf}
-        (if optional graphics packages are available)
+\item \code{<project_dir>/runs/<ALPHA>/Summaries/tables/}
+\code{<ALPHA>-Centroid-Trend-Summary.xlsx}
+(always written)
+\item \code{<project_dir>/runs/<ALPHA>/Summaries/tables/}
+\code{<ALPHA>-Centroid-Trend-Summary.png}
+(if optional graphics packages are available)
+\item \code{<project_dir>/runs/<ALPHA>/Summaries/tables/}
+\code{<ALPHA>-Centroid-Trend-Summary.pdf}
+(if optional graphics packages are available)
 }
 
 \strong{Table structure}
 \itemize{
-  \item Shift block (one row): 1980/2020 centroid coordinates,
-        great-circle distance (km), bearing (deg),
-        velocity (km/yr).
-  \item Regression block (two rows: Longitude, Latitude):
-        Slope, CI Low, CI High, PD, Rope \%.
+\item Shift block (one row): 1980/2020 centroid coordinates,
+great-circle distance (km), bearing (deg),
+velocity (km/yr).
+\item Regression block (two rows: Longitude, Latitude):
+Slope, CI Low, CI High, PD, Rope \\%.
 }
 
 \strong{Visual and typographic specification}
 \itemize{
-  \item Title centered and bold; default 10 pt (configurable).
-  \item Table text 8 pt (Arial default).
-  \item No top border or rule on any block.
-  \item No vertical lines anywhere.
-  \item No horizontal rules between body rows in the regression block.
-  \item Column-label rows have a light-gray ("#BFBFBF") underline;
-        each block capped with a light-gray bottom rule.
-  \item PNG/PDF export uses \pkg{gt} plus \pkg{webshot2} or
-        \pkg{chromote}, with both top and bottom tables centered
-        using \code{table.width} and \code{table.align} and canvas
-        padding via \pkg{magick}.
-  \item PNG/PDF use 1 px data-row padding.
+\item Title centered and bold; default 10 pt (configurable).
+\item Table text 8 pt (Arial default).
+\item No top border or rule on any block.
+\item No vertical lines anywhere.
+\item No horizontal rules between body rows in the regression block.
+\item Column-label rows have a light-gray ("#BFBFBF") underline;
+each block capped with a light-gray bottom rule.
+\item PNG/PDF export uses \pkg{gt} plus \pkg{webshot2} or
+\pkg{chromote}, with both top and bottom tables centered
+using \code{table.width} and \code{table.align} and canvas
+padding via \pkg{magick}.
+\item PNG/PDF use 1 px data-row padding.
 }
 
 \strong{Logging}
