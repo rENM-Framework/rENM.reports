@@ -100,7 +100,7 @@
 #' }
 #'
 #' @importFrom magick image_read image_info image_resize image_blank
-#' image_append image_composite image_write
+#' @importFrom magick image_append image_composite image_write
 #' @importFrom pdftools pdf_convert
 #'
 #' @examples

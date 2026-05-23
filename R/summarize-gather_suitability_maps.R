@@ -76,10 +76,10 @@
 #' }
 #'
 #' @importFrom magick image_read image_trim image_montage image_join
-#'   image_info image_scale image_crop image_blank image_composite
-#'   image_write
+#' @importFrom magick image_info image_scale image_crop image_blank image_composite
+#' @importFrom magick image_write
 #' @importFrom officer read_docx prop_section page_size page_mar
-#'   body_set_default_section external_img fpar fp_par body_add_fpar
+#' @importFrom officer body_set_default_section external_img fpar fp_par body_add_fpar
 #'
 #' @examples
 #' \dontrun{

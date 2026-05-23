@@ -72,9 +72,9 @@
 #' @importFrom readr read_csv
 #' @importFrom dplyr %>%
 #' @importFrom openxlsx createWorkbook addWorksheet createStyle writeData
-#'   mergeCells addStyle setRowHeights freezePane setColWidths saveWorkbook
+#' @importFrom openxlsx mergeCells addStyle setRowHeights freezePane setColWidths saveWorkbook
 #' @importFrom gt gt tab_header md cols_align fmt_number opt_row_striping
-#'   tab_options gtsave px everything
+#' @importFrom gt tab_options gtsave px everything
 #'
 #' @examples
 #' \dontrun{

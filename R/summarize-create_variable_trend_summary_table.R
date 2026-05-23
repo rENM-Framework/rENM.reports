@@ -102,9 +102,9 @@
 #' @importFrom readr read_csv
 #' @importFrom dplyr %>% mutate case_when transmute
 #' @importFrom openxlsx createWorkbook addWorksheet createStyle writeData
-#'   mergeCells addStyle setRowHeights freezePane setColWidths saveWorkbook
+#' @importFrom openxlsx mergeCells addStyle setRowHeights freezePane setColWidths saveWorkbook
 #' @importFrom gt gt tab_header md cols_align fmt_number tab_style
-#'   cell_text cells_body opt_row_striping tab_options gtsave px
+#' @importFrom gt cell_text cells_body opt_row_striping tab_options gtsave px
 #'
 #' @examples
 #' \dontrun{

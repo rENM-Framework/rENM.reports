@@ -1,24 +1,23 @@
+------------------------------------------------------------------------
+
+editor_options: markdown: wrap: 72 ---
+
 # rENM.reports
 
-![rENM](https://img.shields.io/badge/rENM-framework-blue)
-![module](https://img.shields.io/badge/module-reports-informational)
+![rENM](https://img.shields.io/badge/rENM-framework-blue) ![module](https://img.shields.io/badge/module-reports-informational)
 
 **Reporting and synthesis outputs for the rENM Framework**
 
 ## Overview
 
-`rENM.reports` assembles the final, publication-ready outputs of the rENM
-Framework. It integrates modeled results and analytical metrics into
-structured summaries, maps, tables, and reports.
+`rENM.reports` assembles the final, publication-ready outputs of the rENM Framework. It integrates modeled results and analytical metrics into structured summaries, maps, tables, and reports.
 
-This package depends on `rENM.core` for project-directory resolution and
-species metadata access. All functions accept an optional `project_dir`
-argument; see `?rENM_project_dir` for configuration options.
+This package depends on `rENM.core` for project-directory resolution and species metadata access. All functions accept an optional `project_dir` argument; see `?rENM_project_dir` for configuration options.
 
 ## Key functions
 
 | Function | Description |
-|---|---|
+|----|----|
 | `gather_suitability_maps()` | Assemble 3×3 suitability map contact sheet (PNG, PDF, DOCX) |
 | `gather_range_maps()` | Assemble 3×3 range map contact sheet (PNG, PDF, DOCX) |
 | `gather_suitability_trend_stats()` | Merge state-level suitability and hot-spot statistics |
@@ -37,7 +36,7 @@ argument; see `?rENM_project_dir` for configuration options.
 
 ## Installation
 
-```r
+``` r
 # From GitHub
 devtools::install_github("rENM-Framework/rENM.reports")
 
@@ -47,12 +46,9 @@ devtools::install_local("rENM.reports")
 
 ## Getting started
 
-Analytical outputs from `rENM.analysis` must be present before running
-reporting functions. The full reporting workflow runs in two stages:
-first gather and table functions produce intermediate summaries, then
-assemble functions compose those summaries into report pages.
+Analytical outputs from `rENM.analysis` must be present before running reporting functions. The full reporting workflow runs in two stages: first gather and table functions produce intermediate summaries, then assemble functions compose those summaries into report pages.
 
-```r
+``` r
 library(rENM.reports)
 
 proj <- "/path/to/your/rENM/project"
@@ -81,10 +77,9 @@ assemble_range_timeseries_page("CASP")
 assemble_final_report("CASP")
 ```
 
-For interactive work, configure the project directory once per session to
-avoid passing it to every function:
+For interactive work, configure the project directory once per session to avoid passing it to every function:
 
-```r
+``` r
 options(rENM.project_dir = "/path/to/your/rENM/project")
 
 gather_suitability_maps("CASP")
@@ -93,7 +88,7 @@ assemble_final_report("CASP")
 
 ## Reporting pipeline
 
-```
+```         
 gather_suitability_maps()          gather_range_maps()
 gather_suitability_trend_stats()
         ↓
@@ -113,29 +108,22 @@ assemble_range_timeseries_page()
 assemble_final_report()
 ```
 
-Map contact sheets are written to `<run_dir>/Summaries/maps/`. Tables are
-written to `<run_dir>/Summaries/tables/`. Assembled pages are written to
-`<run_dir>/Summaries/pages/`. The final report is written to
-`<run_dir>/Summaries/`. All functions append a structured summary block to
-`<run_dir>/_log.txt`.
+Map contact sheets are written to `<run_dir>/Summaries/maps/`. Tables are written to `<run_dir>/Summaries/tables/`. Assembled pages are written to `<run_dir>/Summaries/pages/`. The final report is written to `<run_dir>/Summaries/`. All functions append a structured summary block to `<run_dir>/_log.txt`.
 
-## Role in the rENM framework
+## Role in the rENM Framework
 
 `rENM.reports` is the final stage in the pipeline:
 
-```
+```         
 rENM.core → rENM.data → rENM.model → rENM.analysis → rENM.ai → rENM.reports
 ```
 
-It consumes the quantitative trends and spatial metrics produced by
-`rENM.analysis` and assembles them into structured, publication-ready
-reporting artifacts.
+It consumes the quantitative trends and spatial metrics produced by `rENM.analysis` and assembles them into structured, publication-ready reporting artifacts.
 
 ## License
 
 See `LICENSE` for details.
 
----
+------------------------------------------------------------------------
 
-**rENM Framework** — A modular system for reconstructing and analyzing
-long-term ecological niche dynamics.
+**rENM Framework** — A modular system for reconstructing and analyzing long-term ecological niche dynamics.
