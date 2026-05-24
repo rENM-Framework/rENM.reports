@@ -1,6 +1,8 @@
-------------------------------------------------------------------------
-
-editor_options: markdown: wrap: 72 ---
+---
+editor_options:
+  markdown:
+    wrap: 72
+---
 
 # rENM.reports
 
@@ -33,6 +35,32 @@ This package depends on `rENM.core` for project-directory resolution and species
 | `assemble_suitability_timeseries_page()` | Single-page PDF: suitability time-series contact sheet |
 | `assemble_range_timeseries_page()` | Single-page PDF: range time-series contact sheet |
 | `assemble_final_report()` | Combine all pages into a single paginated PDF report |
+
+## System requirements
+
+### Chrome or Chromium
+
+The three summary-table functions (`create_suitability_trend_summary_table()`,
+`create_centroid_trend_summary_table()`, `create_variable_trend_summary_table()`)
+export PNG and PDF versions of each table by driving a headless Chrome browser
+via the `webshot2`, `pagedown`, and `chromote` packages. These are listed under
+`Suggests` and must be installed separately:
+
+``` r
+install.packages(c("chromote", "webshot2", "pagedown"))
+```
+
+Verify Chrome is found before running the pipeline:
+
+``` r
+chromote::find_chrome()
+```
+
+If that throws an error, install Google Chrome from <https://www.google.com/chrome/>
+and re-run `chromote::find_chrome()` to confirm.
+
+If Chrome is unavailable, PNG and PDF outputs are silently skipped with a
+console note — the Excel (`.xlsx`) output is always written regardless.
 
 ## Installation
 
