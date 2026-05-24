@@ -109,7 +109,7 @@
 #' @importFrom openxlsx createStyle addStyle setRowHeights setColWidths
 #' @importFrom openxlsx saveWorkbook
 #' @importFrom gt gt tab_header opt_table_font tab_style fmt_number
-#' @importFrom gt cols_align tab_options gtsave everything px google_font
+#' @importFrom gt cols_align tab_options gtsave everything px
 #' @importFrom gt default_fonts cells_title cell_text
 #' @importFrom magick image_read image_info image_extent image_blank
 #' @importFrom magick image_append image_write
@@ -318,7 +318,7 @@ create_centroid_trend_summary_table <- function(alpha_code,
 
     top_gt <- gt::gt(shift_df) |>
       gt::tab_header(title = title_text) |>
-      gt::opt_table_font(font = list(gt::google_font(font_name), gt::default_fonts())) |>
+      gt::opt_table_font(font = list(font_name, gt::default_fonts())) |>
       gt::tab_style(
         style = gt::cell_text(weight = "bold"),
         locations = gt::cells_title(groups = "title")
@@ -340,7 +340,7 @@ create_centroid_trend_summary_table <- function(alpha_code,
       )
 
     bottom_gt <- gt::gt(reg_df) |>
-      gt::opt_table_font(font = list(gt::google_font(font_name), gt::default_fonts())) |>
+      gt::opt_table_font(font = list(font_name, gt::default_fonts())) |>
       gt::fmt_number(columns = 2:6, decimals = decimals) |>
       gt::cols_align(align = "left",  columns = 1) |>
       gt::cols_align(align = "right", columns = 2:6) |>
