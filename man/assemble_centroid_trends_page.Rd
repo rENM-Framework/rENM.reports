@@ -8,15 +8,22 @@ assemble_centroid_trends_page(
   alpha_code,
   page_width_in = 8.5,
   page_height_in = 11,
-  margin_top_in = 1,
-  margin_right_in = 1.75,
-  margin_bottom_in = 1,
-  margin_left_in = 1.75,
   dpi = 300,
-  table_dpi = 600,
-  map_width_fraction = 1,
-  table_width_fraction = 1,
-  v_gap_in = 0.25
+  margin_left_in = 0.75,
+  margin_right_in = 0.75,
+  margin_bottom_in = 0.75,
+  margin_top_in = 1,
+  v_gap_in = 0.3,
+  v_caption_gap_in = 0.3,
+  map_width_factor = 1,
+  table_width_factor = 0.75,
+  table_max_height_in = 2.5,
+  table_pdf_dpi = 600L,
+  trim_map = TRUE,
+  trim_table = TRUE,
+  trim_fuzz = 8,
+  caption_dpi = 600L,
+  debug_frames = FALSE
 )
 }
 \arguments{
@@ -26,27 +33,48 @@ assemble_centroid_trends_page(
 
 \item{page_height_in}{Numeric. Page height in inches. Default 11.}
 
-\item{margin_top_in}{Numeric. Top margin in inches. Default 1.0.}
+\item{dpi}{Numeric. DPI for raster composition. Default 300.}
 
-\item{margin_right_in}{Numeric. Right margin in inches. Default 1.0.}
+\item{margin_left_in}{Numeric. Left margin in inches. Default 0.75.}
 
-\item{margin_bottom_in}{Numeric. Bottom margin in inches. Default 1.0.}
+\item{margin_right_in}{Numeric. Right margin in inches. Default 0.75.}
 
-\item{margin_left_in}{Numeric. Left margin in inches. Default 1.0.}
+\item{margin_bottom_in}{Numeric. Bottom margin in inches. Default 0.75.}
 
-\item{dpi}{Integer. Working DPI for the page canvas and PNG scaling.
-Default 300.}
+\item{margin_top_in}{Numeric. Top margin in inches. Default 1.00.}
 
-\item{table_dpi}{Integer. Rasterization DPI for the table PDF. Default 600.}
+\item{v_gap_in}{Numeric. Vertical gap between map and table in inches.
+Default 0.30.}
 
-\item{map_width_fraction}{Numeric. Fraction (0, 1] of content width used
-for the top map (1.0 = full content width). Default 1.0.}
+\item{v_caption_gap_in}{Numeric. Vertical gap between table and caption
+in inches. Default 0.30.}
 
-\item{table_width_fraction}{Numeric. Fraction (0, 1] of content width used
-for the table (1.0 = full content width). Default 1.0.}
+\item{map_width_factor}{Numeric. Fraction (0 to 1) of content width used
+by the map. Default 1.00.}
 
-\item{v_gap_in}{Numeric. Vertical gap in inches between the map and table.
-Default 0.25.}
+\item{table_width_factor}{Numeric. Fraction (0 to 1) of content width used
+by the table. Default 0.75.}
+
+\item{table_max_height_in}{Numeric. Maximum table height in inches.
+Default 2.50.}
+
+\item{table_pdf_dpi}{Integer. DPI used when rasterizing the table PDF.
+Default 600.}
+
+\item{trim_map}{Logical. If TRUE, trim borders from the map PNG.
+Default TRUE.}
+
+\item{trim_table}{Logical. If TRUE, trim borders from the table image.
+Default TRUE.}
+
+\item{trim_fuzz}{Integer. Tolerance (0 to 100 percent) for trimming.
+Default 8.}
+
+\item{caption_dpi}{Integer. DPI used when rasterizing the caption PDF.
+Default 600.}
+
+\item{debug_frames}{Logical. If TRUE, draw thin frames around placed images
+for debugging. Default FALSE.}
 }
 \value{
 Character. Invisibly returns the output PDF file path.
@@ -55,54 +83,83 @@ Side effects:
 \itemize{
 \item Writes a PDF file to the project directory.
 \item Creates output directories if they do not exist.
-\item Appends a processing summary to the run log file.
+\item Emits a console message indicating the output path.
 }
 }
 \description{
-Builds a single-page PDF combining a suitability map with centroids and a
-centroid trend summary table.
+Builds a single-page PDF combining a suitability trend map with centroids,
+a centroid trend summary table, and a caption into a structured layout.
 }
 \details{
 \strong{Pipeline context}
-This function assembles precomputed visualization outputs into a single
-standardized reporting page. It uses only package code and standard R
-functions and does not source external scripts.
+This function composes a precomputed centroid trend map, a summary table,
+and a package caption into a single standardized reporting page. It operates
+entirely within the rENM project directory and does not rely on external
+scripts.
 
 \strong{Inputs}
-Required input files:
+Inputs must exist at the following locations:
 \preformatted{
   <project_dir>/runs/<alpha_code>/Trends/suitability/<alpha_code>-Suitability-Trend-With-Centroids.png
   <project_dir>/runs/<alpha_code>/Summaries/tables/<alpha_code>-Centroid-Trend-Summary.pdf
 }
-
-\strong{Outputs}
-Output file:
+The caption is read from the installed package resource:
 \preformatted{
-<project_dir>/runs/<alpha_code>/Summaries/pages/<alpha_code>-Centroid-Trends.pdf
+  inst/captions/centroid_shift_caption.pdf
 }
 
-\strong{Logging}
-Appends a standard eBird-format processing summary to
-\code{<project_dir>/runs/<alpha_code>/_log.txt} (blank line before dashed
-separator, no trailing separator).
+\strong{Outputs}
+The function writes a single-page PDF to:
+\preformatted{
+  <project_dir>/runs/<alpha_code>/Summaries/pages/<alpha_code>-Centroid-Trends.pdf
+}
 
-\strong{Layout and scaling}
+\strong{Layout and composition}
 \itemize{
-\item Top:    (A) \code{<ALPHA>-Suitability-Trend-With-Centroids.png}
-\item Bottom: (B) \code{<ALPHA>-Centroid-Trend-Summary.pdf}
-\item Map scaled to \code{map_width_fraction x content width}
-\item Table scaled to \code{table_width_fraction x content width}
-\item Both preserve aspect ratio and are centered horizontally.
+\item The centroid trend map is placed at the top of the content area,
+scaled to fill the content width (subject to \code{map_width_factor})
+while preserving its aspect ratio.
+\item A summary table is placed \code{v_gap_in} inches below the map,
+centered horizontally (subject to \code{table_width_factor}).
+\item A caption is placed \code{v_caption_gap_in} inches below the table,
+centered horizontally and never stretched (aspect ratio preserved).
+\item Layout dimensions are controlled in inches and converted to pixels
+using the specified DPI.
+}
+
+\strong{Caption rendering}
+The caption PDF (\code{centroid_shift_caption.pdf}) is rasterized via
+\code{pdftools::pdf_convert()} at \code{caption_dpi} (default 600) to
+preserve original typography (including bold). It is trimmed to remove
+surrounding page whitespace, then centered horizontally and scaled down
+only if wider than the content area; otherwise it is drawn at native size.
+
+\strong{Table rendering}
+The table PDF is rasterized via \code{pdftools::pdf_convert()} at
+\code{table_pdf_dpi} (default 600) to improve text clarity. The table is
+then fitted within \code{table_width_factor} of the content width subject
+to \code{table_max_height_in}.
+
+\strong{Trimming}
+\itemize{
+\item Uniform borders are optionally trimmed from the map (controlled by
+\code{trim_map}) and the table (controlled by \code{trim_table})
+to remove hidden padding.
+\item The caption is always trimmed after rasterization to remove the
+surrounding page whitespace, so only the text block contributes
+to the layout height calculation.
+\item Trimming uses a tolerance defined by \code{trim_fuzz}.
 }
 
 \strong{Methods}
-Image composition is performed using the magick package. The summary table
-PDF is rasterized using \code{pdftools::pdf_convert()} at the specified DPI
-before scaling and placement.
+Image reading, trimming, scaling, and composition are handled by the
+magick package. The table and caption PDFs are rasterized by pdftools.
+Aspect-preserving resizing ensures consistent layout while respecting
+maximum width and height constraints.
 
 \strong{Data requirements}
 All required input files must exist prior to execution. The function will
-terminate with an error if any required input is missing.
+terminate with an error if any required input or the caption PDF is missing.
 }
 \examples{
 \dontrun{

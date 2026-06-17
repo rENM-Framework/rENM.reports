@@ -8,14 +8,18 @@ assemble_suitability_trends_page(
   alpha_code,
   page_width_in = 8.5,
   page_height_in = 11,
-  margin_top_in = 1,
-  margin_right_in = 1,
-  margin_bottom_in = 1,
-  margin_left_in = 1,
   dpi = 300,
-  caption_dpi = 600,
-  panel_gap_in = 0.15,
-  v_gap_in = 0.25
+  margin_left_in = 0.75,
+  margin_right_in = 0.75,
+  margin_bottom_in = 0.75,
+  margin_top_in = 1,
+  h_gutter_in = 0.2,
+  v_gap_in = 0.3,
+  map_width_factor = 1,
+  trim_maps = TRUE,
+  trim_fuzz = 8,
+  caption_dpi = 600L,
+  debug_frames = FALSE
 )
 }
 \arguments{
@@ -25,114 +29,117 @@ assemble_suitability_trends_page(
 
 \item{page_height_in}{Numeric. Page height in inches. Default 11.}
 
-\item{margin_top_in}{Numeric. Top margin in inches. Default 1.}
+\item{dpi}{Numeric. DPI for raster composition. Default 300.}
 
-\item{margin_right_in}{Numeric. Right margin in inches. Default 1.}
+\item{margin_left_in}{Numeric. Left margin in inches. Default 0.75.}
 
-\item{margin_bottom_in}{Numeric. Bottom margin in inches. Default 1.}
+\item{margin_right_in}{Numeric. Right margin in inches. Default 0.75.}
 
-\item{margin_left_in}{Numeric. Left margin in inches. Default 1.}
+\item{margin_bottom_in}{Numeric. Bottom margin in inches. Default 0.75.}
 
-\item{dpi}{Integer. Working resolution for page/maps (dots per inch).
-Default 300.}
+\item{margin_top_in}{Numeric. Top margin in inches. Default 1.00.}
 
-\item{caption_dpi}{Integer. Rasterization DPI for the caption PDF
-(higher = crisper). Default 600.}
+\item{h_gutter_in}{Numeric. Horizontal gap between maps in inches.
+Default 0.20.}
 
-\item{panel_gap_in}{Numeric. Horizontal gap (inches) between the two
-top panels. Default 0.15.}
+\item{v_gap_in}{Numeric. Vertical gap between maps and caption in inches.
+Default 0.30.}
 
-\item{v_gap_in}{Numeric. Vertical gap (inches) between the top row and
-the caption. Default 0.25.}
+\item{map_width_factor}{Numeric. Fraction (0 to 1) of content width used
+by the map row. Default 1.00.}
+
+\item{trim_maps}{Logical. If TRUE, trim borders from map PNGs.
+Default TRUE.}
+
+\item{trim_fuzz}{Integer. Tolerance (0 to 100 percent) for trimming.
+Default 8.}
+
+\item{caption_dpi}{Integer. DPI used when rasterizing the caption PDF.
+Default 600.}
+
+\item{debug_frames}{Logical. If TRUE, draw thin frames around placed images
+for debugging. Default FALSE.}
 }
 \value{
-Character. Invisibly returns the output PDF path.
+Character. Invisibly returns the output PDF file path.
+
+Side effects:
 \itemize{
-\item Output file written to:
-\code{<project_dir>/runs/<alpha_code>/Summaries/pages/}
-"<alpha_code>-Suitability-Trends.pdf"
-\item Appends processing summary to:
-\code{<project_dir>/runs/<alpha_code>/}
-\code{_log.txt}
+\item Writes a PDF file to the project directory.
+\item Creates output directories if they do not exist.
+\item Emits a console message indicating the output path.
 }
 }
 \description{
-Builds a single-page PDF combining a suitability trend map, a suitability
-change trend map (acceleration/deceleration), and a caption.
+Builds a single-page PDF that combines a suitability trend map and a
+suitability change trend map with a caption into a structured layout.
 }
 \details{
 \strong{Pipeline context}
-Produces a single-page PDF with:
-\itemize{
-\item Top row:
-\itemize{
-\item (A) "\if{html}{\out{<ALPHA>}}-Suitability-Trend.png"
-\item (B) "\if{html}{\out{<ALPHA>}}-Suitability-Change-Trend.png", side-by-side.
-}
-\item Bottom:
-\itemize{
-\item (C) A fixed, shared caption PDF included with the
-rENM.reports package:
-"inst/captions/suitability_trend_caption.pdf"
-(accessed via system.file()).
-}
-}
-
-The caption is rasterized via pdftools at high DPI to preserve
-original typography (including bold), centered horizontally, and
-never stretched (aspect ratio preserved).
+This function composes two precomputed trend maps and a package caption into
+a single standardized reporting page. It operates entirely within the rENM
+project directory and does not rely on external scripts.
 
 \strong{Inputs}
-\itemize{
-\item Caption PDF is read directly from installed package resources
-(no staging).
-\item A and B are read as PNG files from:
-\code{<project_dir>/runs/<alpha_code>/Trends/suitability/}
+Inputs must exist at the following locations:
+\preformatted{
+  <project_dir>/runs/<alpha_code>/Trends/suitability/<alpha_code>-Suitability-Trend.png
+  <project_dir>/runs/<alpha_code>/Trends/suitability/<alpha_code>-Suitability-Change-Trend.png
 }
-
-\strong{Processing steps}
-\itemize{
-\item Reads the caption PDF directly from the installed package
-resources (no staging).
-\item Reads A + B (PNG) and rasterizes C (PDF) using
-pdftools::pdf_convert() at a specified caption_dpi (default 600).
-\item Scales the caption down only if wider than the content area;
-otherwise draws at native size, centered.
-\item Composites everything onto a Letter page and writes:
-\code{<project_dir>/runs/<alpha_code>/Summaries/pages/}
-"<alpha_code>-Suitability-Trends.pdf".
+The caption is read from the installed package resource:
+\preformatted{
+  inst/captions/suitability_trend_caption.pdf
 }
 
 \strong{Outputs}
+The function writes a single-page PDF to:
+\preformatted{
+  <project_dir>/runs/<alpha_code>/Summaries/pages/<alpha_code>-Suitability-Trends.pdf
+}
+
+\strong{Layout and composition}
 \itemize{
-\item Output PDF written to:
-\code{<project_dir>/runs/<alpha_code>/Summaries/pages/}
-"<alpha_code>-Suitability-Trends.pdf"
+\item Two top-aligned maps (Suitability Trend and Change Trend) are placed
+side by side under a configurable top margin.
+\item The map row can be narrowed and centered using
+\code{map_width_factor}.
+\item A caption is placed \code{v_gap_in} inches below the taller of the
+two maps, centered horizontally and never stretched (aspect ratio
+preserved).
+\item Layout dimensions are controlled in inches and converted to pixels
+using the specified DPI.
+}
+
+\strong{Caption rendering}
+The caption PDF (\code{suitability_trend_caption.pdf}) is rasterized via
+\code{pdftools::pdf_convert()} at \code{caption_dpi} (default 600) to
+preserve original typography (including bold). It is trimmed to remove
+surrounding page whitespace, then centered horizontally and scaled down
+only if wider than the content area; otherwise it is drawn at native size.
+
+\strong{Trimming}
+\itemize{
+\item Uniform borders are optionally trimmed from maps (controlled by
+\code{trim_maps}) to remove hidden padding.
+\item The caption is always trimmed after rasterization to remove the
+surrounding page whitespace, so only the text block contributes
+to the layout height calculation.
+\item Trimming uses a tolerance defined by \code{trim_fuzz}.
 }
 
 \strong{Methods}
-Why pdftools? Using pdftools::pdf_convert() (Poppler) avoids font
-substitution issues that can occur when ImageMagick/Ghostscript
-cannot find the bold font family. Rasterizing at a high DPI preserves
-the visual weight of bold text exactly as in the source PDF. The image
-is then centered and never stretched (aspect ratio preserved).
+Image reading, trimming, scaling, and composition are handled by the
+magick package. The caption PDF is rasterized by pdftools.
+Aspect-preserving resizing ensures consistent layout while respecting
+maximum width and height constraints.
 
 \strong{Data requirements}
-Dependencies: Requires the magick and pdftools packages. If png is
-missing on your system, install it as well; pdf_convert() writes a PNG
-which is then read via magick.
-
-Logging:
-Appends an eBird-standard processing summary to
-\code{<project_dir>/runs/<alpha_code>/}
-\code{_log.txt}
-with a blank line before the dashed separator and no trailing
-separator, including the caption source path.
+All required input files must exist prior to execution. The function will
+terminate with an error if required PNGs or the caption PDF are missing.
 }
 \examples{
 \dontrun{
 assemble_suitability_trends_page("CASP")
-assemble_suitability_trends_page("CASP", caption_dpi = 900)
 }
 
 }

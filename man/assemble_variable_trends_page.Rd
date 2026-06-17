@@ -13,29 +13,27 @@ assemble_variable_trends_page(
   margin_right_in = 0.75,
   margin_bottom_in = 0.75,
   margin_top_in = 1,
-  v_gap_in = 0.5,
+  v_gap_in = 0.3,
+  v_caption_gap_in = 0.3,
   plot_width_factor = 0.85,
   table_width_factor = 0.5,
   table_max_height_in = 3,
-  prefer_table_pdf = TRUE,
-  table_pdf_dpi = 600,
-  table_png_supersample = 1.5,
-  table_sharpen = TRUE,
+  table_pdf_dpi = 600L,
   trim_plot = TRUE,
   trim_table = TRUE,
   trim_fuzz = 8,
-  append_version_to_filename = FALSE
+  caption_dpi = 600L,
+  debug_frames = FALSE
 )
 }
 \arguments{
-\item{alpha_code}{Character. Species code (case-insensitive).}
+\item{alpha_code}{Character. Species alpha code (case-insensitive).}
 
 \item{page_width_in}{Numeric. Page width in inches. Default 8.5.}
 
 \item{page_height_in}{Numeric. Page height in inches. Default 11.}
 
-\item{dpi}{Numeric. DPI for the output page raster composition.
-Default 300.}
+\item{dpi}{Numeric. DPI for raster composition. Default 300.}
 
 \item{margin_left_in}{Numeric. Left margin in inches. Default 0.75.}
 
@@ -45,32 +43,25 @@ Default 300.}
 
 \item{margin_top_in}{Numeric. Top margin in inches. Default 1.00.}
 
-\item{v_gap_in}{Numeric. Visible gap in inches between plot and table.
-Default 0.50.}
+\item{v_gap_in}{Numeric. Vertical gap between plot and table in inches.
+Default 0.30.}
 
-\item{plot_width_factor}{Numeric. Fraction (0, 1] of content width used
+\item{v_caption_gap_in}{Numeric. Vertical gap between table and caption
+in inches. Default 0.30.}
+
+\item{plot_width_factor}{Numeric. Fraction (0 to 1) of content width used
 by the plot. Default 0.85.}
 
-\item{table_width_factor}{Numeric. Fraction (0, 1] of content width used
+\item{table_width_factor}{Numeric. Fraction (0 to 1) of content width used
 by the table. Default 0.50.}
 
 \item{table_max_height_in}{Numeric. Maximum table height in inches.
 Default 3.00.}
 
-\item{prefer_table_pdf}{Logical. If TRUE and a PDF exists, read the table
-using \code{magick::image_read_pdf()}. Default TRUE.}
-
-\item{table_pdf_dpi}{Integer. DPI when rasterizing the table PDF.
+\item{table_pdf_dpi}{Integer. DPI used when rasterizing the table PDF.
 Default 600.}
 
-\item{table_png_supersample}{Numeric. Greater than or equal to 1; upscale
-PNG tables by this factor before fitting (for example, 2 = 200 percent).
-Default 1.5.}
-
-\item{table_sharpen}{Logical. If TRUE, apply mild sharpening after scaling.
-Default TRUE.}
-
-\item{trim_plot}{Logical. If TRUE, trim borders from the plot image.
+\item{trim_plot}{Logical. If TRUE, trim borders from the plot PNG.
 Default TRUE.}
 
 \item{trim_table}{Logical. If TRUE, trim borders from the table image.
@@ -79,8 +70,11 @@ Default TRUE.}
 \item{trim_fuzz}{Integer. Tolerance (0 to 100 percent) for trimming.
 Default 8.}
 
-\item{append_version_to_filename}{Logical. If TRUE, append a timestamp to
-the output filename to avoid preview caching. Default FALSE.}
+\item{caption_dpi}{Integer. DPI used when rasterizing the caption PDF.
+Default 600.}
+
+\item{debug_frames}{Logical. If TRUE, draw thin frames around placed images
+for debugging. Default FALSE.}
 }
 \value{
 Character. Invisibly returns the output PDF file path.
@@ -89,69 +83,83 @@ Side effects:
 \itemize{
 \item Writes a PDF file to the project directory.
 \item Creates output directories if they do not exist.
-\item Appends a processing summary to the run log file.
+\item Emits a console message indicating the output path.
 }
 }
 \description{
-Builds a single-page PDF that vertically stacks a variable-contribution
-lines plot above a summary table with proportional scaling and centered
-alignment.
+Builds a single-page PDF combining a variable-contribution lines plot,
+a summary table, and a caption into a structured layout.
 }
 \details{
 \strong{Pipeline context}
-This function composes precomputed variable-trend visualizations into a
-single standardized reporting page. All operations are performed using
-package-based functionality without sourcing external scripts.
+This function composes a precomputed variable-contribution trend plot, a
+summary table, and a package caption into a single standardized reporting
+page. It operates entirely within the rENM project directory and does not
+rely on external scripts.
 
 \strong{Inputs}
-Required input files:
+Inputs must exist at the following locations:
 \preformatted{
   <project_dir>/runs/<alpha_code>/Trends/variables/<alpha_code>-Variable-Contributions-BR-Lines-NoRibbon.png
   <project_dir>/runs/<alpha_code>/Summaries/tables/<alpha_code>-Variable-Trend-Summary.pdf
-  <project_dir>/runs/<alpha_code>/Summaries/tables/<alpha_code>-Variable-Trend-Summary.png
+}
+The caption is read from the installed package resource:
+\preformatted{
+  inst/captions/variable_trend_caption.pdf
 }
 
 \strong{Outputs}
-Output file:
+The function writes a single-page PDF to:
 \preformatted{
   <project_dir>/runs/<alpha_code>/Summaries/pages/<alpha_code>-Variable-Trends.pdf
 }
 
-\strong{Layout and scaling}
+\strong{Layout and composition}
 \itemize{
-\item Top: variable-contribution lines plot
-\item Bottom: summary table
-\item Plot is placed below the top margin
-\item Table is placed exactly \code{v_gap_in} inches below the plot
-\item Both elements are scaled proportionally and centered horizontally
-\item No cropping is performed; only scaling
+\item The variable-contribution plot is placed at the top of the content
+area, scaled to fill the content width (subject to
+\code{plot_width_factor}) while preserving its aspect ratio.
+\item A summary table is placed \code{v_gap_in} inches below the plot,
+centered horizontally (subject to \code{table_width_factor}).
+\item A caption is placed \code{v_caption_gap_in} inches below the table,
+centered horizontally and never stretched (aspect ratio preserved).
+\item Layout dimensions are controlled in inches and converted to pixels
+using the specified DPI.
 }
+
+\strong{Caption rendering}
+The caption PDF (\code{variable_trend_caption.pdf}) is rasterized via
+\code{pdftools::pdf_convert()} at \code{caption_dpi} (default 600) to
+preserve original typography (including bold). It is trimmed to remove
+surrounding page whitespace, then centered horizontally and scaled down
+only if wider than the content area; otherwise it is drawn at native size.
 
 \strong{Table rendering}
+The table PDF is rasterized via \code{pdftools::pdf_convert()} at
+\code{table_pdf_dpi} (default 600) to improve text clarity. The table is
+then fitted within \code{table_width_factor} of the content width subject
+to \code{table_max_height_in}.
+
+\strong{Trimming}
 \itemize{
-\item By default, the table is read from PDF and rasterized at high DPI
-using \code{magick::image_read_pdf()} for crisp text
-\item If PDF is unavailable or \code{prefer_table_pdf = FALSE}, a PNG is
-used instead
-\item PNG tables may be supersampled using
-\code{table_png_supersample} (for example, 2 = 200 percent)
-\item Optional sharpening can be applied using \code{table_sharpen}
+\item Uniform borders are optionally trimmed from the plot (controlled by
+\code{trim_plot}) and the table (controlled by \code{trim_table})
+to remove hidden padding.
+\item The caption is always trimmed after rasterization to remove the
+surrounding page whitespace, so only the text block contributes
+to the layout height calculation.
+\item Trimming uses a tolerance defined by \code{trim_fuzz}.
 }
 
-\strong{Logging}
-The function prints progress messages and appends an eBird-style processing
-summary to \code{<project_dir>/runs/<alpha_code>/_log.txt} with start and
-stop times and elapsed seconds. The log entry includes a blank line before
-the separator and no trailing separator after the entry.
-
 \strong{Methods}
-All image reading, trimming, scaling, and composition is handled using the
-magick package. Table rasterization from PDF uses
-\code{magick::image_read_pdf()}.
+Image reading, trimming, scaling, and composition are handled by the
+magick package. The table and caption PDFs are rasterized by pdftools.
+Aspect-preserving resizing ensures consistent layout while respecting
+maximum width and height constraints.
 
 \strong{Data requirements}
-Required input files must exist prior to execution. The function will stop
-with an error if required inputs are missing.
+All required input files must exist prior to execution. The function will
+terminate with an error if any required input or the caption PDF is missing.
 }
 \examples{
 \dontrun{

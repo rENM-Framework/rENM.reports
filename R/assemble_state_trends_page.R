@@ -1,7 +1,8 @@
 #' Assemble a "State Trends" page
 #'
 #' Builds a single-page PDF that combines a state-level suitability map and
-#' a state hot spot map with a summary table into a structured layout. 
+#' a state hot spot map with a summary table and caption into a structured
+#' layout.
 #'
 #' @details
 #' \strong{Pipeline context}
@@ -17,6 +18,10 @@
 #'   <project_dir>/runs/<alpha_code>/Summaries/tables/<alpha_code>-Suitability-Trend-Summary.png
 #'   (Optional) PDF table:
 #'   <project_dir>/runs/<alpha_code>/Summaries/tables/<alpha_code>-Suitability-Trend-Summary.pdf
+#' }
+#' The caption is read from the installed package resource:
+#' \preformatted{
+#'   inst/captions/hotspot_summary_caption.pdf
 #' }
 #'
 #' \strong{Outputs}
@@ -35,9 +40,18 @@
 #'         taller of the two maps.
 #'   \item The table can be narrowed and centered using
 #'         \code{table_width_factor}.
+#'   \item A caption is placed \code{v_caption_gap_in} inches below the table,
+#'         centered horizontally and never stretched (aspect ratio preserved).
 #'   \item Layout dimensions are controlled in inches and converted to pixels
 #'         using the specified DPI.
 #' }
+#'
+#' \strong{Caption rendering}
+#' The caption PDF (\code{hotspot_summary_caption.pdf}) is rasterized via
+#' \code{pdftools::pdf_convert()} at \code{caption_dpi} (default 600) to
+#' preserve original typography (including bold). It is centered horizontally
+#' and scaled down only if wider than the content area; otherwise it is drawn
+#' at native size.
 #'
 #' \strong{Table rendering}
 #' \itemize{
@@ -54,17 +68,22 @@
 #' \itemize{
 #'   \item Uniform borders are trimmed from maps and optionally from the
 #'         table to remove hidden padding.
+#'   \item The caption is always trimmed after rasterization to remove the
+#'         surrounding page whitespace, so only the text block contributes
+#'         to the layout height calculation.
 #'   \item Trimming uses a tolerance defined by \code{trim_fuzz}.
 #' }
 #'
 #' \strong{Methods}
-#' All image reading, trimming, scaling, and composition are handled using the
-#' magick package. Aspect-preserving resizing ensures consistent layout while
-#' respecting maximum width and height constraints.
+#' Image reading, trimming, scaling, and composition are handled by the
+#' magick package. The caption PDF is rasterized by pdftools.
+#' Aspect-preserving resizing ensures consistent layout while respecting
+#' maximum width and height constraints.
 #'
 #' \strong{Data requirements}
 #' All required input files must exist prior to execution. The function will
-#' terminate with an error if required PNGs or table sources are missing.
+#' terminate with an error if required PNGs, table sources, or the caption
+#' PDF are missing.
 #'
 #' @param alpha_code Character. Species code (case-insensitive).
 #' @param page_width_in Numeric. Page width in inches. Default 8.5.
@@ -77,7 +96,7 @@
 #' @param h_gutter_in Numeric. Horizontal gap between maps in inches.
 #' Default 0.20.
 #' @param v_gap_in Numeric. Vertical gap between maps and table in inches.
-#' Default 1.00.
+#' Default 0.30.
 #' @param map_width_factor Numeric. Fraction (0 to 1) of content width used
 #' by the map row. Default 1.00.
 #' @param table_width_factor Numeric. Fraction (0 to 1) of content width used
@@ -99,6 +118,10 @@
 #' Default TRUE.
 #' @param trim_fuzz Integer. Tolerance (0 to 100 percent) for trimming.
 #' Default 8.
+#' @param caption_dpi Integer. DPI used when rasterizing the caption PDF.
+#' Default 600.
+#' @param v_caption_gap_in Numeric. Vertical gap in inches between the table
+#' and the caption. Default 0.30.
 #' @param append_version_to_filename Logical. If TRUE, append a timestamp to
 #' the output filename to avoid preview caching. Default FALSE.
 #' @param debug_frames Logical. If TRUE, draw thin frames around placed images
@@ -117,6 +140,7 @@
 #' @importFrom magick image_read image_read_pdf image_trim image_scale
 #' @importFrom magick image_resize image_info image_blank image_composite
 #' @importFrom magick image_write
+#' @importFrom pdftools pdf_convert
 #'
 #' @examples
 #' \dontrun{
@@ -133,7 +157,7 @@ assemble_state_trends_page <- function(alpha_code,
                                        margin_bottom_in = 0.75,
                                        margin_top_in = 1.00,
                                        h_gutter_in = 0.20,
-                                       v_gap_in = 1.00,
+                                       v_gap_in = 0.30,
                                        map_width_factor = 1.00,
                                        table_width_factor = 0.75,
                                        table_max_height_in = 2.50,
@@ -144,12 +168,18 @@ assemble_state_trends_page <- function(alpha_code,
                                        trim_maps = TRUE,
                                        trim_table = TRUE,
                                        trim_fuzz = 8,
+                                       caption_dpi = 600L,
+                                       v_caption_gap_in = 0.30,
                                        append_version_to_filename = FALSE,
                                        debug_frames = FALSE) {
   
   # ---- Dependencies ---------------------------------------------------------
   if (!requireNamespace("magick", quietly = TRUE)) {
     stop("Package 'magick' is required. Please install.packages('magick').",
+         call. = FALSE)
+  }
+  if (!requireNamespace("pdftools", quietly = TRUE)) {
+    stop("Package 'pdftools' is required for caption fidelity. install.packages('pdftools')",
          call. = FALSE)
   }
   
@@ -182,6 +212,9 @@ assemble_state_trends_page <- function(alpha_code,
     sprintf("%s-Suitability-Trend-Summary.pdf", code)
   )
   
+  in_caption_pdf <- system.file("captions", "hotspot_summary_caption.pdf",
+                                package = "rENM.reports")
+
   out_dir <- file.path(runs_dir, "Summaries", "pages")
   if (!dir.exists(out_dir)) {
     dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
@@ -209,6 +242,11 @@ assemble_state_trends_page <- function(alpha_code,
       call. = FALSE
     )
   }
+
+  if (!nzchar(in_caption_pdf) || !file.exists(in_caption_pdf)) {
+    stop("Caption PDF not found in installed package: inst/captions/hotspot_summary_caption.pdf",
+         call. = FALSE)
+  }
   
   # Table: need PNG or (PDF + prefer_table_pdf)
   if (!file.exists(in_tbl_png) && !(prefer_table_pdf && file.exists(in_tbl_pdf))) {
@@ -229,6 +267,7 @@ assemble_state_trends_page <- function(alpha_code,
   mT <- px(margin_top_in)
   hG <- px(h_gutter_in)
   vG <- px(v_gap_in)
+  vCG <- px(v_caption_gap_in)
   tblMaxH <- px(table_max_height_in)
   
   content_x0 <- mL
@@ -314,26 +353,50 @@ assemble_state_trends_page <- function(alpha_code,
   left_x0   <- slot_x0
   right_x0  <- slot_x0 + slot_w + hG
   
+  # ---- Rasterize caption PDF -------------------------------------------------
+  cap_png <- pdftools::pdf_convert(
+    pdf       = in_caption_pdf,
+    format    = "png",
+    dpi       = as.integer(caption_dpi),
+    pages     = 1L,
+    filenames = file.path(tempdir(), "hotspot_caption_1.png")
+  )
+  im_cap <- magick::image_read(cap_png)
+  im_cap <- magick::image_trim(im_cap, fuzz = fuzz)
+  cap_info <- magick::image_info(im_cap)
+  cap_w <- as.integer(cap_info$width[1])
+  cap_h <- as.integer(cap_info$height[1])
+  if (is.na(cap_w) || is.na(cap_h) || cap_w <= 0 || cap_h <= 0) {
+    stop("Caption image has invalid dimensions after pdftools rasterization.", call. = FALSE)
+  }
+  if (cap_w > content_w) {
+    scale_factor <- content_w / cap_w
+    cap_w <- max(1L, as.integer(floor(cap_w * scale_factor)))
+    cap_h <- max(1L, as.integer(floor(cap_h * scale_factor)))
+    im_cap <- magick::image_resize(im_cap, paste0(cap_w, "x", cap_h, "!"))
+  }
+
   # ---- Fit maps with exact visible gap calculation -------------------------
-  max_map_h_avail <- content_h - vG - tbl_h
+  max_map_h_avail <- content_h - vG - tbl_h - vCG - cap_h
   if (max_map_h_avail < px(0.5)) {
     stop(
       "Not enough vertical space: reduce table_max_height_in / v_gap_in, or margins.",
       call. = FALSE
     )
   }
-  
+
   im_state_fit <- fit_image(im_state, slot_w, max_map_h_avail)
   im_hot_fit   <- fit_image(im_hot,   slot_w, max_map_h_avail)
-  
+
   h1 <- magick::image_info(im_state_fit)$height
   h2 <- magick::image_info(im_hot_fit)$height
   max_map_h <- max(h1, h2)
-  
-  maps_y0  <- content_y0
-  table_y0 <- maps_y0 + max_map_h + vG
-  
-  if (table_y0 + tbl_h > content_y1) {
+
+  maps_y0   <- content_y0
+  table_y0  <- maps_y0 + max_map_h + vG
+  cap_y0    <- table_y0 + tbl_h + vCG
+
+  if (cap_y0 + cap_h > content_y1) {
     stop(
       "Layout overflow: lower v_gap_in or table_max_height_in, or increase bottom margin.",
       call. = FALSE
@@ -373,9 +436,14 @@ assemble_state_trends_page <- function(alpha_code,
                          table_y0,
                          tbl_w,
                          tbl_h)
+    canvas <- draw_frame(canvas,
+                         content_x0 + floor((content_w - cap_w) / 2),
+                         cap_y0,
+                         cap_w,
+                         cap_h)
   }
-  
-  # ---- Composite (top-aligned maps; centered table) ------------------------
+
+  # ---- Composite (top-aligned maps; centered table and caption) -----------
   place_top_center <- function(base, overlay, slot_x0, slot_y0, slot_w) {
     oi <- magick::image_info(overlay)
     dx <- slot_x0 + floor((slot_w - oi$width) / 2)
@@ -385,20 +453,27 @@ assemble_state_trends_page <- function(alpha_code,
       offset = sprintf("+%d+%d", dx, slot_y0)
     )
   }
-  
+
   canvas <- place_top_center(canvas, im_state_fit, left_x0,  maps_y0, slot_w)
   canvas <- place_top_center(canvas, im_hot_fit,   right_x0, maps_y0, slot_w)
-  
+
   t_dx <- content_x0 + floor((content_w - tbl_w) / 2)
   canvas <- magick::image_composite(
     canvas,
     im_tbl_fit,
     offset = sprintf("+%d+%d", t_dx, table_y0)
   )
-  
+
+  cap_dx <- content_x0 + floor((content_w - cap_w) / 2)
+  canvas <- magick::image_composite(
+    canvas,
+    im_cap,
+    offset = sprintf("+%d+%d", cap_dx, cap_y0)
+  )
+
   # ---- Output --------------------------------------------------------------
   magick::image_write(canvas, path = out_pdf, format = "pdf")
   message("Wrote: ", out_pdf)
-  
+
   invisible(out_pdf)
 }

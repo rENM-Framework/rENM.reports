@@ -9,119 +9,127 @@ assemble_suitability_timeseries_page(
   page_width_in = 8.5,
   page_height_in = 11,
   dpi = 300,
-  margin_in = 1,
-  target_content_width_in = 6,
-  map_width_fraction = 0.85,
-  caption_width_fraction = 0.85,
-  gap_between_in = 0.5,
-  trim_fuzz = 5,
-  verbose = TRUE
+  margin_left_in = 0.75,
+  margin_right_in = 0.75,
+  margin_bottom_in = 0.75,
+  margin_top_in = 1,
+  v_gap_in = 0.3,
+  map_width_factor = 1,
+  trim_map = TRUE,
+  trim_fuzz = 8,
+  caption_dpi = 600L,
+  debug_frames = FALSE
 )
 }
 \arguments{
-\item{alpha_code}{Character. Species alpha code (for example, \code{"CASP"}).
-Converted internally to uppercase for file naming and paths.}
+\item{alpha_code}{Character. Species alpha code (case-insensitive).}
 
 \item{page_width_in}{Numeric. Page width in inches. Default 8.5.}
 
 \item{page_height_in}{Numeric. Page height in inches. Default 11.}
 
-\item{dpi}{Numeric. Target raster resolution in dots per inch for both the
-caption rendering and the final layout. Default 300.}
+\item{dpi}{Numeric. DPI for raster composition. Default 300.}
 
-\item{margin_in}{Numeric. Uniform margin on all sides in inches. Default 1.}
+\item{margin_left_in}{Numeric. Left margin in inches. Default 0.75.}
 
-\item{target_content_width_in}{Numeric. Target graphic width in inches for
-the map and caption when width fractions are 1.0. Default 6.}
+\item{margin_right_in}{Numeric. Right margin in inches. Default 0.75.}
 
-\item{map_width_fraction}{Numeric. Fraction (0, 1] of target width for map.}
+\item{margin_bottom_in}{Numeric. Bottom margin in inches. Default 0.75.}
 
-\item{caption_width_fraction}{Numeric. Fraction (0, 1] of target width for
-caption.}
+\item{margin_top_in}{Numeric. Top margin in inches. Default 1.00.}
 
-\item{gap_between_in}{Numeric. Vertical gap between map and caption in
-inches.}
+\item{v_gap_in}{Numeric. Vertical gap between map and caption in inches.
+Default 0.30.}
 
-\item{trim_fuzz}{Numeric. Fuzz percentage for
-\code{magick::image_trim()}.}
+\item{map_width_factor}{Numeric. Fraction (0 to 1) of content width used
+by the map. Default 1.00.}
 
-\item{verbose}{Logical. If TRUE, print diagnostic messages.}
+\item{trim_map}{Logical. If TRUE, trim borders from the map PNG.
+Default TRUE.}
+
+\item{trim_fuzz}{Integer. Tolerance (0 to 100 percent) for trimming.
+Default 8.}
+
+\item{caption_dpi}{Integer. DPI used when rasterizing the caption PDF.
+Default 600.}
+
+\item{debug_frames}{Logical. If TRUE, draw thin frames around placed images
+for debugging. Default FALSE.}
 }
 \value{
-Character. Invisibly returns the output PDF file path:
-\preformatted{
-  <project_dir>/runs/<alpha_code>/Summaries/pages/<alpha_code>-Suitability-TimeSeries.pdf
-}
+Character. Invisibly returns the output PDF file path.
 
 Side effects:
 \itemize{
-\item Writes a PDF file to the project directory
-\item Creates output directories if they do not exist
-\item Appends a processing summary to the run log file
+\item Writes a PDF file to the project directory.
+\item Creates output directories if they do not exist.
+\item Emits a console message indicating the output path.
 }
 }
 \description{
-Builds a single-page PDF that vertically stacks a collection of suitability
-maps above a shared caption with controlled spacing and proportional scaling.
+Builds a single-page PDF that places a suitability contact-sheet map above
+a caption in a structured layout.
 }
 \details{
 \strong{Pipeline context}
-For a given species alpha code (\code{alpha_code}), this function builds a
-single-page PDF that stacks:
-\enumerate{
-\item The suitability contact-sheet map PNG (A) on the top of the page:
-\code{<project_dir>/runs/<alpha_code>/Summaries/maps/<alpha_code>-Suitability-Maps.png}
-\item A shared suitability time-series caption PDF (B; first page only)
-underneath:
-\code{system.file("captions",
-     "suitability_timeseries_caption.pdf",
-     package = "rENM.reports")}
-}
-
-Both elements are:
-\itemize{
-\item Converted to raster images
-\item Trimmed to remove uniform white margins via
-\code{magick::image_trim()}
-\item Scaled so that, when \code{map_width_fraction = 1} and
-\code{caption_width_fraction = 1}, the visible width of both (A)
-and (B) is \code{target_content_width_in} inches (default 6),
-subject to the page interior width
-\item Separated by an adjustable vertical gap of
-\code{gap_between_in} inches
-\item Stacked vertically (map above gap, gap above caption)
-\item Placed on a white Letter-sized page (8.5 x 11 inches) with
-uniform margins
-}
-
-Trimming the source rasters first ensures that any extra baked-in white
-margins are removed, so the final 6-inch width corresponds to the graphic
-itself rather than its original page padding.
-
-The function also appends an eBird-standard processing summary to
-\code{<project_dir>/runs/<alpha_code>/_log.txt}, including the caption
-source path.
+This function composes a precomputed suitability contact-sheet image and a
+package caption into a single standardized reporting page. It operates
+entirely within the rENM project directory and does not rely on external
+scripts.
 
 \strong{Inputs}
+Inputs must exist at the following locations:
 \preformatted{
   <project_dir>/runs/<alpha_code>/Summaries/maps/<alpha_code>-Suitability-Maps.png
-  system.file("captions", "suitability_timeseries_caption.pdf",
-              package = "rENM.reports")
+}
+The caption is read from the installed package resource:
+\preformatted{
+  inst/captions/suitability_timeseries_caption.pdf
 }
 
 \strong{Outputs}
+The function writes a single-page PDF to:
 \preformatted{
   <project_dir>/runs/<alpha_code>/Summaries/pages/<alpha_code>-Suitability-TimeSeries.pdf
 }
 
+\strong{Layout and composition}
+\itemize{
+\item The contact-sheet map is placed at the top of the content area,
+scaled to fill the content width (subject to \code{map_width_factor})
+while preserving its aspect ratio.
+\item A caption is placed \code{v_gap_in} inches below the map, centered
+horizontally and never stretched (aspect ratio preserved).
+\item Layout dimensions are controlled in inches and converted to pixels
+using the specified DPI.
+}
+
+\strong{Caption rendering}
+The caption PDF (\code{suitability_timeseries_caption.pdf}) is rasterized
+via \code{pdftools::pdf_convert()} at \code{caption_dpi} (default 600) to
+preserve original typography (including bold). It is trimmed to remove
+surrounding page whitespace, then centered horizontally and scaled down
+only if wider than the content area; otherwise it is drawn at native size.
+
+\strong{Trimming}
+\itemize{
+\item Uniform borders are optionally trimmed from the map (controlled by
+\code{trim_map}) to remove hidden padding.
+\item The caption is always trimmed after rasterization to remove the
+surrounding page whitespace, so only the text block contributes
+to the layout height calculation.
+\item Trimming uses a tolerance defined by \code{trim_fuzz}.
+}
+
 \strong{Methods}
-All image reading, trimming, scaling, and composition are handled using
-the magick package. The caption PDF is rasterized using
-\code{pdftools::pdf_render_page()}.
+Image reading, trimming, scaling, and composition are handled by the
+magick package. The caption PDF is rasterized by pdftools.
+Aspect-preserving resizing ensures consistent layout while respecting
+maximum width and height constraints.
 
 \strong{Data requirements}
-Required input files must exist prior to execution. The function will stop
-with an error if the map PNG or caption PDF is missing.
+All required input files must exist prior to execution. The function will
+terminate with an error if the map PNG or the caption PDF are missing.
 }
 \examples{
 \dontrun{

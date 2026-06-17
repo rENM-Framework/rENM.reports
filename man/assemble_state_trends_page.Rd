@@ -14,7 +14,7 @@ assemble_state_trends_page(
   margin_bottom_in = 0.75,
   margin_top_in = 1,
   h_gutter_in = 0.2,
-  v_gap_in = 1,
+  v_gap_in = 0.3,
   map_width_factor = 1,
   table_width_factor = 0.75,
   table_max_height_in = 2.5,
@@ -25,6 +25,8 @@ assemble_state_trends_page(
   trim_maps = TRUE,
   trim_table = TRUE,
   trim_fuzz = 8,
+  caption_dpi = 600L,
+  v_caption_gap_in = 0.3,
   append_version_to_filename = FALSE,
   debug_frames = FALSE
 )
@@ -50,7 +52,7 @@ assemble_state_trends_page(
 Default 0.20.}
 
 \item{v_gap_in}{Numeric. Vertical gap between maps and table in inches.
-Default 1.00.}
+Default 0.30.}
 
 \item{map_width_factor}{Numeric. Fraction (0 to 1) of content width used
 by the map row. Default 1.00.}
@@ -83,6 +85,12 @@ Default TRUE.}
 \item{trim_fuzz}{Integer. Tolerance (0 to 100 percent) for trimming.
 Default 8.}
 
+\item{caption_dpi}{Integer. DPI used when rasterizing the caption PDF.
+Default 600.}
+
+\item{v_caption_gap_in}{Numeric. Vertical gap in inches between the table
+and the caption. Default 0.30.}
+
 \item{append_version_to_filename}{Logical. If TRUE, append a timestamp to
 the output filename to avoid preview caching. Default FALSE.}
 
@@ -101,7 +109,8 @@ Side effects:
 }
 \description{
 Builds a single-page PDF that combines a state-level suitability map and
-a state hot spot map with a summary table into a structured layout.
+a state hot spot map with a summary table and caption into a structured
+layout.
 }
 \details{
 \strong{Pipeline context}
@@ -117,6 +126,10 @@ Inputs must exist at the following locations:
   <project_dir>/runs/<alpha_code>/Summaries/tables/<alpha_code>-Suitability-Trend-Summary.png
   (Optional) PDF table:
   <project_dir>/runs/<alpha_code>/Summaries/tables/<alpha_code>-Suitability-Trend-Summary.pdf
+}
+The caption is read from the installed package resource:
+\preformatted{
+  inst/captions/hotspot_summary_caption.pdf
 }
 
 \strong{Outputs}
@@ -135,9 +148,18 @@ a configurable top margin.
 taller of the two maps.
 \item The table can be narrowed and centered using
 \code{table_width_factor}.
+\item A caption is placed \code{v_caption_gap_in} inches below the table,
+centered horizontally and never stretched (aspect ratio preserved).
 \item Layout dimensions are controlled in inches and converted to pixels
 using the specified DPI.
 }
+
+\strong{Caption rendering}
+The caption PDF (\code{hotspot_summary_caption.pdf}) is rasterized via
+\code{pdftools::pdf_convert()} at \code{caption_dpi} (default 600) to
+preserve original typography (including bold). It is centered horizontally
+and scaled down only if wider than the content area; otherwise it is drawn
+at native size.
 
 \strong{Table rendering}
 \itemize{
@@ -154,17 +176,22 @@ using the specified DPI.
 \itemize{
 \item Uniform borders are trimmed from maps and optionally from the
 table to remove hidden padding.
+\item The caption is always trimmed after rasterization to remove the
+surrounding page whitespace, so only the text block contributes
+to the layout height calculation.
 \item Trimming uses a tolerance defined by \code{trim_fuzz}.
 }
 
 \strong{Methods}
-All image reading, trimming, scaling, and composition are handled using the
-magick package. Aspect-preserving resizing ensures consistent layout while
-respecting maximum width and height constraints.
+Image reading, trimming, scaling, and composition are handled by the
+magick package. The caption PDF is rasterized by pdftools.
+Aspect-preserving resizing ensures consistent layout while respecting
+maximum width and height constraints.
 
 \strong{Data requirements}
 All required input files must exist prior to execution. The function will
-terminate with an error if required PNGs or table sources are missing.
+terminate with an error if required PNGs, table sources, or the caption
+PDF are missing.
 }
 \examples{
 \dontrun{
