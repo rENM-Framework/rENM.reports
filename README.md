@@ -69,10 +69,10 @@ regardless.
 
 ``` r
 # From GitHub
-devtools::install_github("rENM-Framework/rENM.reports")
+remotes::install_github("rENM-Framework/rENM.reports")
 
 # From a local source directory
-devtools::install_local("rENM.reports")
+remotes::install_local("rENM.reports")
 ```
 
 ## Getting started

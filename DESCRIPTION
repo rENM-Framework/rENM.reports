@@ -20,13 +20,18 @@ Imports:
     rENM.core,
     dplyr,
     graphics,
+    grDevices,
+    grid,
     gt,
     magick,
     officer,
     openxlsx,
     pdftools,
     png,
-    readr
+    readr,
+    stats,
+    tools,
+    utils
 Suggests:
     chromote,
     pagedown,
