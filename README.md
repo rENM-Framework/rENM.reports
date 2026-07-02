@@ -28,7 +28,7 @@ This package depends on `rENM.core` for project-directory resolution and species
 | `assemble_variable_trend_maps_page()` | Stage variable trend map pages (caption + maps) |
 | `assemble_suitability_timeseries_page()` | Single-page PDF: suitability time-series contact sheet |
 | `assemble_range_timeseries_page()` | Single-page PDF: range time-series contact sheet |
-| `assemble_final_report()` | Combine all pages into a single paginated PDF report |
+| `assemble_final_report()` | Combine all pages into a paginated PDF report; optionally also produce a `.docx` version |
 
 ## System requirements
 

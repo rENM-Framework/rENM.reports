@@ -10,6 +10,7 @@ assemble_final_report(
   front_matter = NULL,
   appendix = "variables.pdf",
   page_numbers = TRUE,
+  docx = FALSE,
   dpi = 150,
   cleanup = TRUE,
   verbose = TRUE
@@ -32,23 +33,31 @@ If \code{NULL} (default), the standard page set and order are used.}
 \item{appendix}{Character. Optional. Filename of a PDF located in
 \code{rENM.reports::inst/resources/} to append.}
 
-\item{page_numbers}{Logical. Add page numbers (default TRUE).}
+\item{page_numbers}{Logical. Stamp page numbers on the PDF (default
+TRUE). Cover page (page 1) is always left unnumbered.}
 
-\item{dpi}{Numeric. Rasterization resolution when numbering.}
+\item{docx}{Logical. Also produce a .docx version (default FALSE).
+Requires the \code{officer} and \code{png} packages. Pages are
+rasterized to PNG at \code{dpi} resolution for Word embedding.}
 
-\item{cleanup}{Logical. Remove temporary files.}
+\item{dpi}{Numeric. Rasterization resolution used only when
+\code{docx = TRUE} (default 150).}
 
-\item{verbose}{Logical. Print progress messages.}
+\item{cleanup}{Logical. Remove temporary files (default TRUE).}
+
+\item{verbose}{Logical. Print progress messages (default TRUE).}
 }
 \value{
-Character. Invisibly returns the final PDF path.
+Character vector. Invisibly returns the path(s) to the
+output file(s): the PDF path always first, the .docx path second
+when \code{docx = TRUE}.
 }
 \description{
 Combines a predefined or user-specified set of per-page PDF products
-into a single report PDF for a given species run. Optionally
-rasterizes the pages and draws centered page numbers on all but
-the cover page. Optionally prepends a front matter PDF and/or
-appends an appendix PDF sourced from rENM.reports.
+into a single report for a given species run. Produces a vector PDF
+(page numbers stamped via cpdf, no rasterization) and optionally a
+.docx version. Optionally prepends a front matter PDF and/or appends
+an appendix PDF sourced from rENM.reports.
 }
 \details{
 By default, a fixed set of pages is assembled in a predefined order.
@@ -62,6 +71,16 @@ Users may override this behavior via the \code{pages} argument to:
 Optional front matter and appendix PDFs must be located in
 \code{inst/resources/} within the rENM.reports package.
 
+Page numbers are stamped directly onto the combined PDF using
+\code{cpdf} (Coherent PDF Tools), preserving full vector quality
+without rasterization. \code{cpdf} must be on the system PATH;
+install via \code{brew install cpdf} on macOS.
+
+When \code{docx = TRUE}, each page is rasterized to PNG and inserted
+into a Word document via the \code{officer} package. Rasterization is
+unavoidable for the .docx format (Word cannot embed PDF vector
+content), so it only runs when explicitly requested.
+
 \strong{Inputs}
 \itemize{
 \item Pre-generated page PDFs in
@@ -72,9 +91,12 @@ Optional front matter and appendix PDFs must be located in
 
 \strong{Outputs}
 \itemize{
-\item Final report:
+\item Final PDF report:
 \code{<rENM_project_dir()>/runs/<alpha_code>/Summaries/
         <alpha_code>-Final-Report.pdf}
+\item Optional Word report (when \code{docx = TRUE}):
+\code{<rENM_project_dir()>/runs/<alpha_code>/Summaries/
+        <alpha_code>-Final-Report.docx}
 \item Processing summary appended to
 \code{<rENM_project_dir()>/runs/<alpha_code>/_log.txt}
 }
@@ -86,7 +108,8 @@ assemble_final_report("BETH")
 assemble_final_report(
   "BETH",
   front_matter = "Front-Matter.pdf",
-  appendix = "Appendix.pdf"
+  appendix     = "Appendix.pdf",
+  docx         = TRUE
 )
 }
 

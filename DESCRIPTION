@@ -16,10 +16,11 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 URL: https://github.com/rENM-Framework/rENM.reports
 BugReports: https://github.com/rENM-Framework/rENM.reports/issues
+SystemRequirements: cpdf (Coherent PDF Tools, https://www.coherentpdf.com/;
+    install via 'brew install cpdf' on macOS)
 Imports:
     rENM.core,
     dplyr,
-    graphics,
     grDevices,
     grid,
     gt,
