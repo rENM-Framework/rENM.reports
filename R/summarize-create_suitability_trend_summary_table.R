@@ -19,6 +19,8 @@
 #'   \item Reads the summary CSV using \code{readr::read_csv}.
 #'   \item Verifies required columns are present.
 #'   \item Converts numeric columns safely.
+#'   \item Sorts states by Range \% descending and, if \code{top_states} is
+#'     set, keeps only the top \code{top_states} rows.
 #'   \item Renames columns for presentation.
 #'   \item Builds a formatted Excel workbook using \code{openxlsx}.
 #'   \item Creates a styled table using \code{gt}.
@@ -54,6 +56,10 @@
 #' hotspot_area, hotspot_pct.
 #'
 #' @param alpha_code Character. Four-letter species code.
+#' @param top_states Integer. If provided, restricts the table to the
+#'   \code{top_states} states with the highest Range \% (gap range as a
+#'   percentage of state area), sorted descending. Default \code{NULL}
+#'   includes all states from the input CSV.
 #'
 #' @return
 #' A named list returned invisibly with the following elements:
@@ -79,10 +85,13 @@
 #' @examples
 #' \dontrun{
 #' create_suitability_trend_summary_table("CASP")
+#'
+#' # Restrict to the 12 states with the highest Range %
+#' create_suitability_trend_summary_table("CASP", top_states = 12)
 #' }
 #'
 #' @export
-create_suitability_trend_summary_table <- function(alpha_code) {
+create_suitability_trend_summary_table <- function(alpha_code, top_states = 12) {
   # ---- Dependencies ---------------------------------------------------------
   req <- c("readr", "dplyr", "openxlsx", "gt")
   missing_pkgs <- req[!vapply(req, requireNamespace, logical(1), quietly = TRUE)]
@@ -92,6 +101,13 @@ create_suitability_trend_summary_table <- function(alpha_code) {
   has_webshot2 <- requireNamespace("webshot2", quietly = TRUE)
   has_pagedown <- requireNamespace("pagedown", quietly = TRUE)
   `%>%` <- dplyr::`%>%`
+
+  if (!is.null(top_states)) {
+    if (!is.numeric(top_states) || length(top_states) != 1 || top_states < 1) {
+      stop("`top_states` must be a single positive integer or NULL.")
+    }
+    top_states <- as.integer(top_states)
+  }
 
   # ---- Helpers --------------------------------------------------------------
   .fmt_elapsed <- function(elapsed_secs) {
@@ -170,6 +186,12 @@ create_suitability_trend_summary_table <- function(alpha_code) {
     stop("CSV missing expected column(s): ", paste(miss, collapse = ", "))
   }
   df[needed[-1]] <- lapply(df[needed[-1]], function(x) suppressWarnings(as.numeric(x)))
+
+  # Sort by Range % descending; optionally keep only the top N states
+  df <- df[order(-df$range_pct), ]
+  if (!is.null(top_states)) {
+    df <- utils::head(df, top_states)
+  }
 
   # Rename columns for presentation
   colnames(df) <- c(
@@ -299,11 +321,11 @@ create_suitability_trend_summary_table <- function(alpha_code) {
   wrote_png <- FALSE
   wrote_pdf <- FALSE
   if (has_webshot2) {
-    gt::gtsave(gt_tbl, out_png)
+    .gt_save_with_timeout(gt_tbl, out_png)
     wrote_png <- file.exists(out_png)
   }
   if (has_pagedown) {
-    gt::gtsave(gt_tbl, out_pdf)
+    .gt_save_with_timeout(gt_tbl, out_pdf)
     wrote_pdf <- file.exists(out_pdf)
   }
 
@@ -315,7 +337,8 @@ create_suitability_trend_summary_table <- function(alpha_code) {
     "  Outputs: ", out_xlsx, "\n",
     "            ", if (wrote_png) out_png else "(PNG skipped: webshot2 not available)", "\n",
     "            ", if (wrote_pdf) out_pdf else "(PDF skipped: pagedown not available)", "\n",
-    "  Rows:    ", nrow(df), "\n",
+    "  Rows:    ", nrow(df),
+    if (!is.null(top_states)) sprintf(" (top %d by Range %%)", top_states) else "", "\n",
     "  Elapsed: ", .fmt_elapsed(elapsed), "\n",
     sep = ""
   )

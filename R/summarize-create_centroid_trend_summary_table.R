@@ -360,8 +360,8 @@ create_centroid_trend_summary_table <- function(alpha_code,
 
     tmp_top <- tempfile(fileext = ".png")
     tmp_bot <- tempfile(fileext = ".png")
-    gt::gtsave(top_gt, tmp_top, expand = 5)
-    gt::gtsave(bottom_gt, tmp_bot, expand = 5)
+    .gt_save_with_timeout(top_gt, tmp_top, expand = 5)
+    .gt_save_with_timeout(bottom_gt, tmp_bot, expand = 5)
 
     img_top <- magick::image_read(tmp_top)
     img_bot <- magick::image_read(tmp_bot)

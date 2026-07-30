@@ -292,8 +292,8 @@ create_variable_trend_summary_table <- function(alpha_code) {
     )
 
   wrote_png <- FALSE; wrote_pdf <- FALSE
-  if (has_webshot2) { gt::gtsave(gt_tbl, out_png);  wrote_png <- file.exists(out_png) }
-  if (has_pagedown) { gt::gtsave(gt_tbl, out_pdf); wrote_pdf <- file.exists(out_pdf) }
+  if (has_webshot2) { .gt_save_with_timeout(gt_tbl, out_png);  wrote_png <- file.exists(out_png) }
+  if (has_pagedown) { .gt_save_with_timeout(gt_tbl, out_pdf); wrote_pdf <- file.exists(out_pdf) }
 
   # ---- Console summary + log -----------------------------------------------
   elapsed <- difftime(Sys.time(), t0, units = "secs")

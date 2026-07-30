@@ -5,10 +5,15 @@
 \alias{create_suitability_trend_summary_table}
 \title{Create a state-level GAP range / hot spot summary table}
 \usage{
-create_suitability_trend_summary_table(alpha_code)
+create_suitability_trend_summary_table(alpha_code, top_states = 12)
 }
 \arguments{
 \item{alpha_code}{Character. Four-letter species code.}
+
+\item{top_states}{Integer. If provided, restricts the table to the
+\code{top_states} states with the highest Range \\% (gap range as a
+percentage of state area), sorted descending. Default \code{NULL}
+includes all states from the input CSV.}
 }
 \value{
 A named list returned invisibly with the following elements:
@@ -44,6 +49,8 @@ Input CSV must exist at:
 \item Reads the summary CSV using \code{readr::read_csv}.
 \item Verifies required columns are present.
 \item Converts numeric columns safely.
+\item Sorts states by Range \\% descending and, if \code{top_states} is
+set, keeps only the top \code{top_states} rows.
 \item Renames columns for presentation.
 \item Builds a formatted Excel workbook using \code{openxlsx}.
 \item Creates a styled table using \code{gt}.
@@ -81,6 +88,9 @@ hotspot_area, hotspot_pct.
 \examples{
 \dontrun{
 create_suitability_trend_summary_table("CASP")
+
+# Restrict to the 12 states with the highest Range \%
+create_suitability_trend_summary_table("CASP", top_states = 12)
 }
 
 }

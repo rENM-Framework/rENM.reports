@@ -1,5 +1,10 @@
 # rENM.reports 0.2.0.9000
 
+* `create_suitability_trend_summary_table()` — added `top_states` parameter.
+  When set to a positive integer, the table (Excel, PNG, and PDF) is
+  restricted to the states with the highest Range % (gap range as a
+  percentage of state area), sorted descending. Default `NULL` preserves
+  prior behavior of including all states.
 * `assemble_final_report()` — complete rewrite of the final report assembly
   pipeline:
   * Replaced rasterize-to-add-page-numbers approach with `cpdf` (Coherent PDF
@@ -25,6 +30,13 @@
     install message if not found.
 * Removed `graphics` from `Imports` (no longer used).
 * Added `SystemRequirements: cpdf` to `DESCRIPTION`.
+* Internal: PNG/PDF export via `gt::gtsave()` now temporarily raises
+  `options(chromote.timeout)` to 60s (was the chromote default of 10s) to
+  avoid spurious `"Chrome debugging port not open after 10 seconds"`
+  failures when the headless Chrome subprocess is slow to start under
+  system load. Affects `create_suitability_trend_summary_table()`,
+  `create_centroid_trend_summary_table()`, and
+  `create_variable_trend_summary_table()`.
 
 # rENM.reports 0.1.0
 
