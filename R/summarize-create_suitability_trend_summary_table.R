@@ -40,7 +40,7 @@
 #' }
 #'
 #' Table columns are presented as:
-#' State, Extent Area (State Portion), Range Area, Range \%, Positive \%,
+#' State, Extent Area, Range Area, Range \%, Positive \%,
 #' Negative \%, Hot Spot Area, Hot Spot \%.
 #'
 #' \strong{Log behavior}
@@ -195,7 +195,7 @@ create_suitability_trend_summary_table <- function(alpha_code, top_states = 12) 
 
   # Rename columns for presentation
   colnames(df) <- c(
-    "State", "Extent Area (State Portion)", "Range Area", "Range %",
+    "State", "Extent Area", "Range Area", "Range %",
     "Positive %", "Negative %", "Hot Spot Area", "Hot Spot %"
   )
 
@@ -249,7 +249,7 @@ create_suitability_trend_summary_table <- function(alpha_code, top_states = 12) 
     }
   }
 
-  area_cols <- c("Extent Area (State Portion)", "Range Area", "Hot Spot Area")
+  area_cols <- c("Extent Area", "Range Area", "Hot Spot Area")
   pct_cols  <- c("Range %", "Positive %", "Negative %", "Hot Spot %")
   idx_area <- match(area_cols, names(df))
   idx_pct  <- match(pct_cols,  names(df))
@@ -297,7 +297,7 @@ create_suitability_trend_summary_table <- function(alpha_code, top_states = 12) 
     ) %>%
     gt::cols_align("right", columns = gt::everything()) %>%
     gt::fmt_number(
-      columns  = c("Extent Area (State Portion)", "Range Area", "Hot Spot Area"),
+      columns  = c("Extent Area", "Range Area", "Hot Spot Area"),
       decimals = 1,
       use_seps = TRUE
     ) %>%

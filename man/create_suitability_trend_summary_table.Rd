@@ -70,7 +70,7 @@ Output files are written to:
 }
 
 Table columns are presented as:
-State, Extent Area (State Portion), Range Area, Range \\%, Positive \\%,
+State, Extent Area, Range Area, Range \\%, Positive \\%,
 Negative \\%, Hot Spot Area, Hot Spot \\%.
 
 \strong{Log behavior}

@@ -9,11 +9,11 @@
   extent, not the state's true area (which varied across species reports
   for the same state, since it depended on each species' extent).
 * `create_suitability_trend_summary_table()` — renamed the "State Area"
-  column to "Extent Area (State Portion)" to match the corrected field name
+  column to "Extent Area" to match the corrected field name
   above.
 * `assemble_state_trends_page()` — updated the hotspot summary table caption
   (`inst/captions/hotspot_summary_caption.docx`/`.pdf`) to describe the
-  renamed "Extent Area (State Portion)" column accurately; it previously
+  renamed "Extent Area" column accurately; it previously
   called this column "total state area," which was already inaccurate
   before the rename.
 * `create_suitability_trend_summary_table()` — added `top_states` parameter.
