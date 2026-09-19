@@ -13,13 +13,14 @@ gather_suitability_trend_stats(alpha_code)
 Invisibly returns a data.frame with the following columns:
 \itemize{
 \item state: Character. Two-letter state abbreviation.
-\item state_area: Numeric. State area in square kilometers.
+\item extent_area_state: Numeric. Portion of the state's area falling
+within the species' modeled extent (not the state's true area).
 \item range_area: Numeric. Area of species range.
 \item range_pct: Numeric. Percent of state occupied by range.
 \item pos_pct: Numeric. Percent of positive trend area.
 \item neg_pct: Numeric. Percent of negative trend area.
 \item hotspot_area: Numeric. Area classified as hotspot.
-\item hotspot_pct: Numeric. Percent of state as hotspot.
+\item hotspot_pct: Numeric. Hotspot area as a percent of range area.
 }
 
 Side effects:
@@ -83,7 +84,7 @@ Total elapsed, and Output file.
 STATE, GAP.RANGE.AREA, GAP.RANGE.PCT, GAP.RANGE.POS.PCT,
 and either GAPP.RANGE.NEG.PCT or GAP.RANGE.NEG.PCT.
 \item Second file must contain:
-abbr, state_area_km2, hotspot_area_km2, hotspot_pct_of_state.
+abbr, state_area_km2, hotspot_area_km2.
 }
 }
 \examples{

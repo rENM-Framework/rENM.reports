@@ -70,8 +70,8 @@ Output files are written to:
 }
 
 Table columns are presented as:
-State, State Area, Range Area, Range \\%, Positive \\%, Negative \\%,
-Hot Spot Area, Hot Spot \\%.
+State, Extent Area (State Portion), Range Area, Range \\%, Positive \\%,
+Negative \\%, Hot Spot Area, Hot Spot \\%.
 
 \strong{Log behavior}
 Appends a processing summary to:
@@ -82,7 +82,7 @@ using the eBird-standard format.
 
 \strong{Data requirements}
 Input CSV must contain:
-state, state_area, range_area, range_pct, pos_pct, neg_pct,
+state, extent_area_state, range_area, range_pct, pos_pct, neg_pct,
 hotspot_area, hotspot_pct.
 }
 \examples{
