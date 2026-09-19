@@ -54,7 +54,7 @@
 #'   STATE, GAP.RANGE.AREA, GAP.RANGE.PCT, GAP.RANGE.POS.PCT,
 #'   and either GAPP.RANGE.NEG.PCT or GAP.RANGE.NEG.PCT.
 #'   \item Second file must contain:
-#'   abbr, state_area_km2, hotspot_area_km2, hotspot_pct_of_state.
+#'   abbr, state_area_km2, hotspot_area_km2.
 #' }
 #'
 #' @param alpha_code Character. Four-letter species code.
@@ -63,13 +63,14 @@
 #' Invisibly returns a data.frame with the following columns:
 #' \itemize{
 #'   \item state: Character. Two-letter state abbreviation.
-#'   \item state_area: Numeric. State area in square kilometers.
+#'   \item extent_area_state: Numeric. Portion of the state's area falling
+#'     within the species' modeled extent (not the state's true area).
 #'   \item range_area: Numeric. Area of species range.
 #'   \item range_pct: Numeric. Percent of state occupied by range.
 #'   \item pos_pct: Numeric. Percent of positive trend area.
 #'   \item neg_pct: Numeric. Percent of negative trend area.
 #'   \item hotspot_area: Numeric. Area classified as hotspot.
-#'   \item hotspot_pct: Numeric. Percent of state as hotspot.
+#'   \item hotspot_pct: Numeric. Hotspot area as a percent of range area.
 #' }
 #'
 #' Side effects:
@@ -79,7 +80,7 @@
 #' }
 #'
 #' @importFrom readr read_csv write_csv
-#' @importFrom dplyr arrange left_join tibble %>%
+#' @importFrom dplyr arrange left_join tibble mutate if_else %>%
 #'
 #' @examples
 #' \dontrun{
@@ -173,7 +174,7 @@ gather_suitability_trend_stats <- function(alpha_code) {
     )
   }
 
-  req_hot <- c("abbr", "state_area_km2", "hotspot_area_km2", "hotspot_pct_of_state")
+  req_hot <- c("abbr", "state_area_km2", "hotspot_area_km2")
   missing_hot <- setdiff(req_hot, names(hot))
   if (length(missing_hot)) {
     stop(
@@ -193,15 +194,25 @@ gather_suitability_trend_stats <- function(alpha_code) {
   as_num <- function(x) suppressWarnings(as.numeric(x))
 
   out <- dplyr::tibble(
-    state        = merged$STATE,
-    state_area   = as_num(merged$state_area_km2),
-    range_area   = as_num(merged$`GAP.RANGE.AREA`),
-    range_pct    = as_num(merged$`GAP.RANGE.PCT`),
-    pos_pct      = as_num(merged$`GAP.RANGE.POS.PCT`),
-    neg_pct      = as_num(merged[[neg_col]]),
-    hotspot_area = as_num(merged$hotspot_area_km2),
-    hotspot_pct  = as_num(merged$hotspot_pct_of_state)
+    state             = merged$STATE,
+    extent_area_state = as_num(merged$state_area_km2),
+    range_area        = as_num(merged$`GAP.RANGE.AREA`),
+    range_pct         = as_num(merged$`GAP.RANGE.PCT`),
+    pos_pct           = as_num(merged$`GAP.RANGE.POS.PCT`),
+    neg_pct           = as_num(merged[[neg_col]]),
+    hotspot_area      = as_num(merged$hotspot_area_km2)
   ) %>%
+    dplyr::mutate(
+      # Hot Spot % is documented (and reported) as hotspot area over range
+      # area. Computed here directly rather than taken from the upstream
+      # hotspot-stats file, which only has hotspot area as a percent of
+      # state area.
+      hotspot_pct = dplyr::if_else(
+        .data$range_area > 0,
+        100 * .data$hotspot_area / .data$range_area,
+        NA_real_
+      )
+    ) %>%
     dplyr::arrange(.data$state)
 
   # ---- Write CSV ----------------------------------------------------------

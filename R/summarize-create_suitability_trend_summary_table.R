@@ -40,8 +40,8 @@
 #' }
 #'
 #' Table columns are presented as:
-#' State, State Area, Range Area, Range \%, Positive \%, Negative \%,
-#' Hot Spot Area, Hot Spot \%.
+#' State, Extent Area (State Portion), Range Area, Range \%, Positive \%,
+#' Negative \%, Hot Spot Area, Hot Spot \%.
 #'
 #' \strong{Log behavior}
 #' Appends a processing summary to:
@@ -52,7 +52,7 @@
 #'
 #' \strong{Data requirements}
 #' Input CSV must contain:
-#' state, state_area, range_area, range_pct, pos_pct, neg_pct,
+#' state, extent_area_state, range_area, range_pct, pos_pct, neg_pct,
 #' hotspot_area, hotspot_pct.
 #'
 #' @param alpha_code Character. Four-letter species code.
@@ -178,7 +178,7 @@ create_suitability_trend_summary_table <- function(alpha_code, top_states = 12) 
   # ---- Read and prepare -----------------------------------------------------
   df <- readr::read_csv(csv_in, show_col_types = FALSE)
   needed <- c(
-    "state", "state_area", "range_area", "range_pct",
+    "state", "extent_area_state", "range_area", "range_pct",
     "pos_pct", "neg_pct", "hotspot_area", "hotspot_pct"
   )
   miss <- setdiff(needed, names(df))
@@ -195,7 +195,7 @@ create_suitability_trend_summary_table <- function(alpha_code, top_states = 12) 
 
   # Rename columns for presentation
   colnames(df) <- c(
-    "State", "State Area", "Range Area", "Range %",
+    "State", "Extent Area (State Portion)", "Range Area", "Range %",
     "Positive %", "Negative %", "Hot Spot Area", "Hot Spot %"
   )
 
@@ -249,7 +249,7 @@ create_suitability_trend_summary_table <- function(alpha_code, top_states = 12) 
     }
   }
 
-  area_cols <- c("State Area", "Range Area", "Hot Spot Area")
+  area_cols <- c("Extent Area (State Portion)", "Range Area", "Hot Spot Area")
   pct_cols  <- c("Range %", "Positive %", "Negative %", "Hot Spot %")
   idx_area <- match(area_cols, names(df))
   idx_pct  <- match(pct_cols,  names(df))
@@ -297,7 +297,7 @@ create_suitability_trend_summary_table <- function(alpha_code, top_states = 12) 
     ) %>%
     gt::cols_align("right", columns = gt::everything()) %>%
     gt::fmt_number(
-      columns  = c("State Area", "Range Area", "Hot Spot Area"),
+      columns  = c("Extent Area (State Portion)", "Range Area", "Hot Spot Area"),
       decimals = 1,
       use_seps = TRUE
     ) %>%

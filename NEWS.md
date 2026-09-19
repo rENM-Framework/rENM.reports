@@ -1,5 +1,16 @@
 # rENM.reports 0.2.0.9000
 
+* `gather_suitability_trend_stats()` — Hot Spot % is now computed as hotspot
+  area over range area, matching the table's own documented definition,
+  instead of being passed through from the upstream hotspot-stats file
+  (which only tracks hotspot area as a percent of state area). Also renamed
+  the `state_area` field to `extent_area_state` to reflect what it actually
+  measures: the portion of the state's area within the species' modeled
+  extent, not the state's true area (which varied across species reports
+  for the same state, since it depended on each species' extent).
+* `create_suitability_trend_summary_table()` — renamed the "State Area"
+  column to "Extent Area (State Portion)" to match the corrected field name
+  above.
 * `create_suitability_trend_summary_table()` — added `top_states` parameter.
   When set to a positive integer, the table (Excel, PNG, and PDF) is
   restricted to the states with the highest Range % (gap range as a
