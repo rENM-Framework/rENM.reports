@@ -56,6 +56,14 @@
 #'     \item short keys (see Details; e.g., "Suitability-Trends")
 #'   }
 #'   If \code{NULL} (default), the standard page set and order are used.
+#' @param optional_pages Character vector. Pages that are skipped, with a
+#'   warning, when their PDF is absent, instead of aborting assembly.
+#'   Defaults to the AI narrative page, which comes from an external service
+#'   that can fail transiently for reasons unrelated to the data; losing that
+#'   one section should not cost the whole report. Every other missing page
+#'   still raises an error, since that normally means something upstream
+#'   broke and an incomplete report should not ship quietly. Set to
+#'   \code{NULL} to require every page.
 #' @param front_matter Character. Optional. Filename of a PDF located in
 #'   \code{rENM.reports::inst/resources/} to prepend.
 #' @param appendix Character. Optional. Filename of a PDF located in
@@ -92,7 +100,8 @@
 #'
 #' @export
 assemble_final_report <- function(alpha_code,
-                                  pages        = NULL,
+                                  pages          = NULL,
+                                  optional_pages = "Suitability-Trend-Analysis",
                                   front_matter = NULL,
                                   appendix     = "variables.pdf",
                                   page_numbers = TRUE,
@@ -168,6 +177,34 @@ assemble_final_report <- function(alpha_code,
   }
 
   input_paths <- file.path(pages_dir, page_files)
+
+  # -------------------------------------------------------------------
+  # Drop optional pages that were not produced
+  # -------------------------------------------------------------------
+  # A missing page normally means something upstream broke, and assembly
+  # should fail loudly rather than quietly ship an incomplete report. The
+  # AI narrative is the exception: it comes from an external service that
+  # can fail transiently for reasons unrelated to the data. Losing that one
+  # section should not cost the whole report, so it is dropped with a
+  # warning while everything else still hard-fails below.
+  if (length(optional_pages)) {
+    optional_files <- if (all(grepl("\\.pdf$", optional_pages))) {
+      optional_pages
+    } else {
+      sprintf("%s-%s.pdf", alpha_code, optional_pages)
+    }
+    drop <- basename(input_paths) %in% optional_files & !file.exists(input_paths)
+    if (any(drop)) {
+      warning("Omitting optional page(s) not found: ",
+              paste(basename(input_paths[drop]), collapse = ", "),
+              call. = FALSE)
+      input_paths <- input_paths[!drop]
+    }
+  }
+
+  if (!length(input_paths)) {
+    stop("No input pages remain to assemble.", call. = FALSE)
+  }
 
   # -------------------------------------------------------------------
   # Resolve optional front matter and appendix

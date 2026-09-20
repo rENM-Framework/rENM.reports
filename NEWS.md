@@ -1,5 +1,13 @@
 # rENM.reports 0.2.0.9000
 
+* `assemble_final_report()` — added an `optional_pages` argument, defaulting
+  to the AI narrative page. Pages named there are skipped with a warning
+  when their PDF is absent, rather than aborting assembly. Previously any
+  missing page was fatal, so a transient failure of the external narrative
+  service cost the entire report even though every other page had been
+  produced. Missing pages not named in `optional_pages` still raise an
+  error, since that normally means something upstream broke and an
+  incomplete report should not ship quietly.
 * `assemble_state_trends_page()` — the hotspot summary caption
   (`inst/captions/hotspot_summary_caption.docx`/`.pdf`) now describes the
   boundary block, noting that those two rows are range-wide rather than
