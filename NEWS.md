@@ -1,5 +1,21 @@
 # rENM.reports 0.2.0.9000
 
+* Added `inst/resources/methods.docx`/`.pdf`, a methods note appended to
+  every report. The report previously carried no methods text at all, so a
+  reader had no way to know what defined the modeled extent. It states that
+  the extent is the GAP range polygon buffered outward by 250 km in
+  EPSG:5070, derives the 250 km figure from Huang, Sauer & Dubayah (2017),
+  explains that range-based statistics are still computed against the
+  unbuffered polygon, describes the buffer-ring statistic, and records the
+  limitation that the figure is drawn from permanent resident species and
+  may not suit strongly migratory ones.
+* `inst/resources/variables.docx`/`.pdf` — dropped the version number from
+  the title, which now reads "MERRA-2 and MERRAclim-2 variables in the
+  extended dataset". It had read v0.1.0 and would have gone stale at every
+  release.
+* `assemble_final_report()` — `appendix` now accepts a character vector and
+  defaults to `c("methods.pdf", "variables.pdf")`, so the methods note
+  precedes the MERRA variable reference at the back of the report.
 * `assemble_final_report()` — added an `optional_pages` argument, defaulting
   to the AI narrative page. Pages named there are skipped with a warning
   when their PDF is absent, rather than aborting assembly. Previously any

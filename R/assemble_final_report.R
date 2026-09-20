@@ -66,8 +66,12 @@
 #'   \code{NULL} to require every page.
 #' @param front_matter Character. Optional. Filename of a PDF located in
 #'   \code{rENM.reports::inst/resources/} to prepend.
-#' @param appendix Character. Optional. Filename of a PDF located in
-#'   \code{rENM.reports::inst/resources/} to append.
+#' @param appendix Character vector. Optional. Filenames of PDFs located in
+#'   \code{rENM.reports::inst/resources/} to append, in the order given.
+#'   Defaults to \code{c("methods.pdf", "variables.pdf")}: the methods note
+#'   describing how the modeled extent and boundary statistics are defined,
+#'   followed by the MERRA variable reference. Unlike the page set, these
+#'   are static assets, so a missing one is always an error.
 #' @param page_numbers Logical. Stamp page numbers on the PDF (default
 #'   TRUE). Cover page (page 1) is always left unnumbered.
 #' @param docx Logical. Also produce a .docx version (default FALSE).
@@ -103,7 +107,7 @@ assemble_final_report <- function(alpha_code,
                                   pages          = NULL,
                                   optional_pages = "Suitability-Trend-Analysis",
                                   front_matter = NULL,
-                                  appendix     = "variables.pdf",
+                                  appendix     = c("methods.pdf", "variables.pdf"),
                                   page_numbers = TRUE,
                                   docx         = FALSE,
                                   dpi          = 150,
@@ -209,13 +213,15 @@ assemble_final_report <- function(alpha_code,
   # -------------------------------------------------------------------
   # Resolve optional front matter and appendix
   # -------------------------------------------------------------------
-  get_resource_pdf <- function(filename) {
-    if (is.null(filename)) return(NULL)
-    path <- system.file("resources", filename, package = "rENM.reports")
-    if (path == "") {
-      stop(sprintf("Resource PDF not found in rENM.reports: %s", filename))
-    }
-    path
+  get_resource_pdf <- function(filenames) {
+    if (is.null(filenames)) return(NULL)
+    vapply(filenames, function(filename) {
+      path <- system.file("resources", filename, package = "rENM.reports")
+      if (path == "") {
+        stop(sprintf("Resource PDF not found in rENM.reports: %s", filename))
+      }
+      path
+    }, character(1), USE.NAMES = FALSE)
   }
 
   input_paths <- c(
