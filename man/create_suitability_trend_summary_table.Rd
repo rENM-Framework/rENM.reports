@@ -78,8 +78,8 @@ Negative \\%, Hot Spot Area, Hot Spot \\%.
 When
 \code{<alpha_code>-Suitability-Trend-Boundary-Statistics.csv} is present,
 written by \code{rENM.analysis::find_boundary_trend_statistics()}, two
-further rows are appended below the state rows and set off in bold above
-a rule: \code{Range interior} and \code{Buffer ring (250 km)}.
+further rows are appended below the state rows, separated from them by a
+rule: \code{Range interior} and \code{Buffer ring (250 km)}.
 
 These are range-wide figures, not states, and comparing them is the point:
 a ring more positive than the interior indicates conditions improving where
