@@ -15,7 +15,9 @@ Invisibly returns a data.frame with the following columns:
 \item state: Character. Two-letter state abbreviation.
 \item extent_area_state: Numeric. Portion of the state's area falling
 within the species' modeled extent (not the state's true area).
-\item range_area: Numeric. Area of species range.
+\item range_area: Numeric. Area of species range within the state, as
+measured on the model grid rather than from the source polygon, so
+that it shares a measurement basis with hotspot_area.
 \item range_pct: Numeric. Percent of state occupied by range.
 \item pos_pct: Numeric. Percent of positive trend area.
 \item neg_pct: Numeric. Percent of negative trend area.
@@ -81,10 +83,10 @@ Total elapsed, and Output file.
 \strong{Data requirements}
 \itemize{
 \item First file must contain:
-STATE, GAP.RANGE.AREA, GAP.RANGE.PCT, GAP.RANGE.POS.PCT,
+STATE, GAP.RANGE.PCT, GAP.RANGE.POS.PCT,
 and either GAPP.RANGE.NEG.PCT or GAP.RANGE.NEG.PCT.
 \item Second file must contain:
-abbr, state_area_km2, hotspot_area_km2.
+abbr, state_area_km2, range_area_km2, hotspot_area_km2.
 }
 }
 \examples{
