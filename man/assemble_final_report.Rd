@@ -7,8 +7,9 @@
 assemble_final_report(
   alpha_code,
   pages = NULL,
+  optional_pages = "Suitability-Trend-Analysis",
   front_matter = NULL,
-  appendix = "variables.pdf",
+  appendix = c("methods.pdf", "variables.pdf"),
   page_numbers = TRUE,
   docx = FALSE,
   dpi = 150,
@@ -27,11 +28,24 @@ include and their order. May be either:
 }
 If \code{NULL} (default), the standard page set and order are used.}
 
+\item{optional_pages}{Character vector. Pages that are skipped, with a
+warning, when their PDF is absent, instead of aborting assembly.
+Defaults to the AI narrative page, which comes from an external service
+that can fail transiently for reasons unrelated to the data; losing that
+one section should not cost the whole report. Every other missing page
+still raises an error, since that normally means something upstream
+broke and an incomplete report should not ship quietly. Set to
+\code{NULL} to require every page.}
+
 \item{front_matter}{Character. Optional. Filename of a PDF located in
 \code{rENM.reports::inst/resources/} to prepend.}
 
-\item{appendix}{Character. Optional. Filename of a PDF located in
-\code{rENM.reports::inst/resources/} to append.}
+\item{appendix}{Character vector. Optional. Filenames of PDFs located in
+\code{rENM.reports::inst/resources/} to append, in the order given.
+Defaults to \code{c("methods.pdf", "variables.pdf")}: the methods note
+describing how the modeled extent and boundary statistics are defined,
+followed by the MERRA variable reference. Unlike the page set, these
+are static assets, so a missing one is always an error.}
 
 \item{page_numbers}{Logical. Stamp page numbers on the PDF (default
 TRUE). Cover page (page 1) is always left unnumbered.}
