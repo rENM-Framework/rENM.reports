@@ -51,10 +51,10 @@
 #' \strong{Data requirements}
 #' \itemize{
 #'   \item First file must contain:
-#'   STATE, GAP.RANGE.AREA, GAP.RANGE.PCT, GAP.RANGE.POS.PCT,
+#'   STATE, GAP.RANGE.PCT, GAP.RANGE.POS.PCT,
 #'   and either GAPP.RANGE.NEG.PCT or GAP.RANGE.NEG.PCT.
 #'   \item Second file must contain:
-#'   abbr, state_area_km2, hotspot_area_km2.
+#'   abbr, state_area_km2, range_area_km2, hotspot_area_km2.
 #' }
 #'
 #' @param alpha_code Character. Four-letter species code.
@@ -65,7 +65,9 @@
 #'   \item state: Character. Two-letter state abbreviation.
 #'   \item extent_area_state: Numeric. Portion of the state's area falling
 #'     within the species' modeled extent (not the state's true area).
-#'   \item range_area: Numeric. Area of species range.
+#'   \item range_area: Numeric. Area of species range within the state, as
+#'     measured on the model grid rather than from the source polygon, so
+#'     that it shares a measurement basis with hotspot_area.
 #'   \item range_pct: Numeric. Percent of state occupied by range.
 #'   \item pos_pct: Numeric. Percent of positive trend area.
 #'   \item neg_pct: Numeric. Percent of negative trend area.
@@ -152,7 +154,7 @@ gather_suitability_trend_stats <- function(alpha_code) {
   hot  <- readr::read_csv(hot_file,  show_col_types = FALSE)
 
   # ---- Verify required columns -------------------------------------------
-  req_main <- c("STATE", "GAP.RANGE.AREA", "GAP.RANGE.PCT", "GAP.RANGE.POS.PCT")
+  req_main <- c("STATE", "GAP.RANGE.PCT", "GAP.RANGE.POS.PCT")
   missing_main <- setdiff(req_main, names(main))
   if (length(missing_main)) {
     stop(
@@ -174,7 +176,7 @@ gather_suitability_trend_stats <- function(alpha_code) {
     )
   }
 
-  req_hot <- c("abbr", "state_area_km2", "hotspot_area_km2")
+  req_hot <- c("abbr", "state_area_km2", "range_area_km2", "hotspot_area_km2")
   missing_hot <- setdiff(req_hot, names(hot))
   if (length(missing_hot)) {
     stop(
@@ -196,17 +198,18 @@ gather_suitability_trend_stats <- function(alpha_code) {
   out <- dplyr::tibble(
     state             = merged$STATE,
     extent_area_state = as_num(merged$state_area_km2),
-    range_area        = as_num(merged$`GAP.RANGE.AREA`),
+    range_area        = as_num(merged$range_area_km2),
     range_pct         = as_num(merged$`GAP.RANGE.PCT`),
     pos_pct           = as_num(merged$`GAP.RANGE.POS.PCT`),
     neg_pct           = as_num(merged[[neg_col]]),
     hotspot_area      = as_num(merged$hotspot_area_km2)
   ) %>%
     dplyr::mutate(
-      # Hot Spot % is documented (and reported) as hotspot area over range
-      # area. Computed here directly rather than taken from the upstream
-      # hotspot-stats file, which only has hotspot area as a percent of
-      # state area.
+      # Both areas come from the same coverage-weighted cell sums upstream,
+      # so this ratio cannot exceed 100%. Using the vector polygon area
+      # (GAP.RANGE.AREA) as the denominator would reintroduce that
+      # possibility, since it is measured on a different basis than the
+      # hot-spot numerator.
       hotspot_pct = dplyr::if_else(
         .data$range_area > 0,
         100 * .data$hotspot_area / .data$range_area,

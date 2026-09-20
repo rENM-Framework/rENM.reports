@@ -1,5 +1,13 @@
 # rENM.reports 0.2.0.9000
 
+* `gather_suitability_trend_stats()` — the Range Area column and the Hot Spot %
+  denominator now come from `range_area_km2` in the hotspot-stats file rather
+  than `GAP.RANGE.AREA`. Both figures then share a measurement basis with the
+  hot-spot numerator, so Hot Spot % cannot exceed 100. Reported Range Area
+  shifts by well under a percent: it is the same range measured on the model
+  grid instead of from the source polygon. This matters more once results are
+  reported as intervals across seeds, since an interval's upper bound can
+  cross 100 where a point estimate would not.
 * `gather_suitability_trend_stats()` — Hot Spot % is now computed as hotspot
   area over range area, matching the table's own documented definition,
   instead of being passed through from the upstream hotspot-stats file
