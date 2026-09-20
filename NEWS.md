@@ -1,5 +1,10 @@
 # rENM.reports 0.2.0.9000
 
+* `assemble_state_trends_page()` — the hotspot summary caption
+  (`inst/captions/hotspot_summary_caption.docx`/`.pdf`) now describes the
+  boundary block, noting that those two rows are range-wide rather than
+  states, what comparing them shows, and that they are not to be summed with
+  the state rows above.
 * `create_suitability_trend_summary_table()` — appends a boundary block below
   the state rows, separated by a rule: `Range interior` and
   `Buffer ring (250 km)`, read from the CSV written by
