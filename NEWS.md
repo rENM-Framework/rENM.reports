@@ -1,5 +1,14 @@
 # rENM.reports 0.2.0.9000
 
+* `gather_suitability_trend_stats()` — now checks that no row reports a hot
+  spot area exceeding its range area, or a range area exceeding its extent
+  area. Offending rows are named in a warning and recorded in the run log
+  under an "Area checks" line; the table is still written, so one suspect row
+  does not cost an unattended run. The extent comparison allows 1% because a
+  cell-summed area and a vector area measure the same region on different
+  bases. The hot-spot comparison cannot currently fail, since both areas are
+  coverage-weighted sums over the same cells, and is kept as a regression
+  guard: that invariant has broken twice before.
 * `gather_suitability_trend_stats()` — the Range Area column and the Hot Spot %
   denominator now come from `range_area_km2` in the hotspot-stats file rather
   than `GAP.RANGE.AREA`. Both figures then share a measurement basis with the

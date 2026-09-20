@@ -26,7 +26,17 @@
 #'   \item Merges datasets using a left join on state abbreviation.
 #'   \item Converts relevant columns to numeric values.
 #'   \item Assembles a standardized summary table with key metrics.
+#'   \item Checks that no row reports a hot spot area larger than its range
+#'     area, or a range area larger than its extent area.
 #' }
+#'
+#' \strong{Area checks}
+#' A hot spot lies within the range, and the range lies within the modeled
+#' extent, so neither area can exceed the one containing it. Rows breaking
+#' either relation are named in a warning and recorded in the run log; the
+#' table is still written, so a single suspect row does not cost the run.
+#' The extent comparison allows a 1\% tolerance because a cell-summed area
+#' and a vector area measure the same region on different bases.
 #'
 #' \strong{Outputs}
 #' Output file is written to:
@@ -108,7 +118,7 @@ gather_suitability_trend_stats <- function(alpha_code) {
   }
 
   # Helper: append concise eBird-standard log block
-  .append_log <- function(code, out_file, elapsed_secs, project_dir) {
+  .append_log <- function(code, out_file, elapsed_secs, project_dir, flags = NULL) {
     runs_dir <- file.path(project_dir, "runs", code)
     log_file <- file.path(runs_dir, "_log.txt")
     if (!dir.exists(runs_dir)) {
@@ -126,7 +136,10 @@ gather_suitability_trend_stats <- function(alpha_code) {
       sprintf("%-16s %s\n", "Alpha code:",    code),
       sprintf("%-16s %s\n", "Outputs saved:", "1 file"),
       sprintf("%-16s %s\n", "Total elapsed:", .fmt_elapsed(elapsed_secs)),
-      sprintf("%-16s %s\n", "Output file:",   out_file)
+      sprintf("%-16s %s\n", "Output file:",   out_file),
+      sprintf("%-16s %s\n", "Area checks:",
+              if (length(flags)) sprintf("%d FAILED", length(flags)) else "passed"),
+      if (length(flags)) paste0("  - ", flags, "\n", collapse = "") else ""
     )
 
     cat(block, file = log_file, append = TRUE)
@@ -218,13 +231,50 @@ gather_suitability_trend_stats <- function(alpha_code) {
     ) %>%
     dplyr::arrange(.data$state)
 
+  # ---- Check area invariants ----------------------------------------------
+  # A hot spot is a subset of range, and range is a subset of the modeled
+  # extent, so neither area can exceed the one containing it.
+  #
+  # The hot-spot test holds by construction: both areas are coverage-weighted
+  # sums over the same cells. It is kept as a regression guard because the
+  # invariant has broken twice, once when hot spots were masked to the whole
+  # state rather than to GAP range, and once when cells straddling the range
+  # boundary were counted at their full area.
+  #
+  # The range test is a real comparison, between a cell sum and a vector
+  # area. Those measure the same region on different bases and agree to well
+  # under a percent, so the tolerance keeps measurement noise from firing it.
+  extent_tol <- 0.01
+
+  bad_hot <- which(out$hotspot_area > out$range_area)
+  bad_rng <- which(out$range_area > out$extent_area_state * (1 + extent_tol))
+
+  flags <- c(
+    if (length(bad_hot)) sprintf(
+      "%s: hot spot area %.3f exceeds range area %.3f",
+      out$state[bad_hot], out$hotspot_area[bad_hot], out$range_area[bad_hot]
+    ),
+    if (length(bad_rng)) sprintf(
+      "%s: range area %.3f exceeds extent area %.3f",
+      out$state[bad_rng], out$range_area[bad_rng], out$extent_area_state[bad_rng]
+    )
+  )
+
+  if (length(flags)) {
+    warning(
+      "Area invariants violated for ", code, ":\n  ",
+      paste(flags, collapse = "\n  "),
+      call. = FALSE
+    )
+  }
+
   # ---- Write CSV ----------------------------------------------------------
   readr::write_csv(out, out_file)
   message("Merged suitability summary written: ", out_file)
 
   # ---- Log summary --------------------------------------------------------
   elapsed <- difftime(Sys.time(), t0, units = "secs")
-  .append_log(code, out_file, elapsed, project_dir)
+  .append_log(code, out_file, elapsed, project_dir, flags)
 
   invisible(out)
 }
