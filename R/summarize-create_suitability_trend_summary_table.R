@@ -22,6 +22,7 @@
 #'   \item Sorts states by Range \% descending and, if \code{top_states} is
 #'     set, keeps only the top \code{top_states} rows.
 #'   \item Renames columns for presentation.
+#'   \item Appends the boundary block, when boundary statistics exist.
 #'   \item Builds a formatted Excel workbook using \code{openxlsx}.
 #'   \item Creates a styled table using \code{gt}.
 #'   \item Optionally exports PNG using webshot2 if available.
@@ -42,6 +43,23 @@
 #' Table columns are presented as:
 #' State, Extent Area, Range Area, Range \%, Positive \%,
 #' Negative \%, Hot Spot Area, Hot Spot \%.
+#'
+#' \strong{Boundary block}
+#' When
+#' \code{<alpha_code>-Suitability-Trend-Boundary-Statistics.csv} is present,
+#' written by \code{rENM.analysis::find_boundary_trend_statistics()}, two
+#' further rows are appended below the state rows and set off in bold above
+#' a rule: \code{Range interior} and \code{Buffer ring (250 km)}.
+#'
+#' These are range-wide figures, not states, and comparing them is the point:
+#' a ring more positive than the interior indicates conditions improving where
+#' the species would expand into, while a ring less positive indicates the
+#' reverse. They are never to be summed with the state rows. Extent Area and
+#' Range \% are blank for them, since Range \% is a state's share of the
+#' species total range and has no analogue here.
+#'
+#' The block is omitted when the file is absent, so the table still builds
+#' for runs predating that function.
 #'
 #' \strong{Log behavior}
 #' Appends a processing summary to:
@@ -81,6 +99,7 @@
 #' @importFrom openxlsx mergeCells addStyle setRowHeights freezePane setColWidths saveWorkbook
 #' @importFrom gt gt tab_header md cols_align fmt_number opt_row_striping
 #' @importFrom gt tab_options gtsave px everything
+#' @importFrom gt tab_style cell_text cell_borders cells_body
 #'
 #' @examples
 #' \dontrun{
@@ -199,6 +218,43 @@ create_suitability_trend_summary_table <- function(alpha_code, top_states = 12) 
     "Positive %", "Negative %", "Hot Spot Area", "Hot Spot %"
   )
 
+  # ---- Append the boundary block --------------------------------------------
+  # Range-wide interior and ring figures, appended after the state rows are
+  # sorted and trimmed so they stay at the foot of the table. They answer a
+  # different question than the state rows -- what is happening just outside
+  # the range -- and must not be read as further states or summed with them.
+  # Extent Area and Range % are left blank because neither applies: Range %
+  # is a state's share of the species total range.
+  #
+  # Optional by design: the table still builds for a run predating
+  # find_boundary_trend_statistics(), or when it is invoked on its own.
+  n_states <- nrow(df)
+  bnd_csv  <- file.path(
+    project_dir, "runs", code, "Trends", "suitability",
+    sprintf("%s-Suitability-Trend-Boundary-Statistics.csv", code)
+  )
+  if (file.exists(bnd_csv)) {
+    bnd <- readr::read_csv(bnd_csv, show_col_types = FALSE)
+    lab <- c(interior = "Range interior", ring = "Buffer ring (250 km)")
+    bnd <- bnd[match(names(lab), bnd$zone), , drop = FALSE]
+    bnd <- bnd[!is.na(bnd$zone), , drop = FALSE]
+    if (nrow(bnd)) {
+      df <- rbind(df, data.frame(
+        "State"         = unname(lab[bnd$zone]),
+        "Extent Area"   = NA_real_,
+        "Range Area"    = bnd$area_km2,
+        "Range %"       = NA_real_,
+        "Positive %"    = bnd$pos_pct,
+        "Negative %"    = bnd$neg_pct,
+        "Hot Spot Area" = bnd$hotspot_area_km2,
+        "Hot Spot %"    = bnd$hotspot_pct,
+        check.names     = FALSE,
+        stringsAsFactors = FALSE
+      ))
+    }
+  }
+  n_bnd <- nrow(df) - n_states
+
   # ---- Excel workbook -------------------------------------------------------
   wb <- openxlsx::createWorkbook()
   openxlsx::addWorksheet(wb, "Summary", gridLines = FALSE)
@@ -279,6 +335,23 @@ create_suitability_trend_summary_table <- function(alpha_code, top_states = 12) 
     cols = 1:ncol(df),
     gridExpand = TRUE
   )
+
+  # Set the boundary rows apart from the state rows above them.
+  if (n_bnd > 0) {
+    openxlsx::addStyle(
+      wb, "Summary",
+      openxlsx::createStyle(textDecoration = "bold", halign = "right"),
+      rows = (start_row + n_states + 1):(start_row + nrow(df)),
+      cols = 1:ncol(df), gridExpand = TRUE, stack = TRUE
+    )
+    openxlsx::addStyle(
+      wb, "Summary",
+      openxlsx::createStyle(border = "top", borderStyle = "thin"),
+      rows = start_row + n_states + 1,
+      cols = 1:ncol(df), gridExpand = TRUE, stack = TRUE
+    )
+  }
+
   openxlsx::setRowHeights(wb, "Summary", rows = 1, heights = 20)
   openxlsx::setRowHeights(
     wb, "Summary",
@@ -317,6 +390,18 @@ create_suitability_trend_summary_table <- function(alpha_code, top_states = 12) 
       table_body.vlines.width    = gt::px(0),
       heading.title.font.size    = gt::px(10)
     )
+
+  if (n_bnd > 0) {
+    gt_tbl <- gt_tbl %>%
+      gt::tab_style(
+        style     = gt::cell_text(weight = "bold"),
+        locations = gt::cells_body(rows = (n_states + 1):nrow(df))
+      ) %>%
+      gt::tab_style(
+        style     = gt::cell_borders(sides = "top", weight = gt::px(1)),
+        locations = gt::cells_body(rows = n_states + 1)
+      )
+  }
 
   wrote_png <- FALSE
   wrote_pdf <- FALSE

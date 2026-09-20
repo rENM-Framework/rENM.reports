@@ -1,5 +1,15 @@
 # rENM.reports 0.2.0.9000
 
+* `create_suitability_trend_summary_table()` — appends a boundary block below
+  the state rows, set off in bold above a rule: `Range interior` and
+  `Buffer ring (250 km)`, read from the CSV written by
+  `rENM.analysis::find_boundary_trend_statistics()`. These are range-wide
+  figures rather than states, and the comparison between them is the point —
+  a ring more positive than the interior points to conditions improving where
+  the species would expand into. They are never summed with the state rows.
+  Extent Area and Range % are blank for them, Range % being a state's share
+  of the species total range. The block is skipped when the file is absent,
+  so the table still builds for runs predating that function.
 * `gather_suitability_trend_stats()` — now checks that no row reports a hot
   spot area exceeding its range area, or a range area exceeding its extent
   area. Offending rows are named in a warning and recorded in the run log
