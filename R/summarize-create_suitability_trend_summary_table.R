@@ -48,8 +48,8 @@
 #' When
 #' \code{<alpha_code>-Suitability-Trend-Boundary-Statistics.csv} is present,
 #' written by \code{rENM.analysis::find_boundary_trend_statistics()}, two
-#' further rows are appended below the state rows and set off in bold above
-#' a rule: \code{Range interior} and \code{Buffer ring (250 km)}.
+#' further rows are appended below the state rows, separated from them by a
+#' rule: \code{Range interior} and \code{Buffer ring (250 km)}.
 #'
 #' These are range-wide figures, not states, and comparing them is the point:
 #' a ring more positive than the interior indicates conditions improving where
@@ -99,7 +99,7 @@
 #' @importFrom openxlsx mergeCells addStyle setRowHeights freezePane setColWidths saveWorkbook
 #' @importFrom gt gt tab_header md cols_align fmt_number opt_row_striping
 #' @importFrom gt tab_options gtsave px everything
-#' @importFrom gt tab_style cell_text cell_borders cells_body
+#' @importFrom gt tab_style cell_borders cells_body sub_missing
 #'
 #' @examples
 #' \dontrun{
@@ -340,13 +340,8 @@ create_suitability_trend_summary_table <- function(alpha_code, top_states = 12) 
   if (n_bnd > 0) {
     openxlsx::addStyle(
       wb, "Summary",
-      openxlsx::createStyle(textDecoration = "bold", halign = "right"),
-      rows = (start_row + n_states + 1):(start_row + nrow(df)),
-      cols = 1:ncol(df), gridExpand = TRUE, stack = TRUE
-    )
-    openxlsx::addStyle(
-      wb, "Summary",
-      openxlsx::createStyle(border = "top", borderStyle = "thin"),
+      openxlsx::createStyle(border = "top", borderStyle = "thin",
+                            borderColour = "#D3D3D3"),
       rows = start_row + n_states + 1,
       cols = 1:ncol(df), gridExpand = TRUE, stack = TRUE
     )
@@ -378,6 +373,9 @@ create_suitability_trend_summary_table <- function(alpha_code, top_states = 12) 
       columns  = c("Range %", "Positive %", "Negative %", "Hot Spot %"),
       decimals = 1
     ) %>%
+    # Extent Area and Range % are blank for the boundary rows because neither
+    # applies to them; rendered as "NA" they read as an error instead.
+    gt::sub_missing(columns = gt::everything(), missing_text = "") %>%
     gt::opt_row_striping() %>%
     gt::tab_options(
       table.font.size            = gt::px(8),
@@ -394,11 +392,9 @@ create_suitability_trend_summary_table <- function(alpha_code, top_states = 12) 
   if (n_bnd > 0) {
     gt_tbl <- gt_tbl %>%
       gt::tab_style(
-        style     = gt::cell_text(weight = "bold"),
-        locations = gt::cells_body(rows = (n_states + 1):nrow(df))
-      ) %>%
-      gt::tab_style(
-        style     = gt::cell_borders(sides = "top", weight = gt::px(1)),
+        style     = gt::cell_borders(sides  = "top",
+                                     color  = "#D3D3D3",
+                                     weight = gt::px(1)),
         locations = gt::cells_body(rows = n_states + 1)
       )
   }

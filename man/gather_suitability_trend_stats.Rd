@@ -58,7 +58,17 @@ Input files must exist at:
 \item Merges datasets using a left join on state abbreviation.
 \item Converts relevant columns to numeric values.
 \item Assembles a standardized summary table with key metrics.
+\item Checks that no row reports a hot spot area larger than its range
+area, or a range area larger than its extent area.
 }
+
+\strong{Area checks}
+A hot spot lies within the range, and the range lies within the modeled
+extent, so neither area can exceed the one containing it. Rows breaking
+either relation are named in a warning and recorded in the run log; the
+table is still written, so a single suspect row does not cost the run.
+The extent comparison allows a 1\\% tolerance because a cell-summed area
+and a vector area measure the same region on different bases.
 
 \strong{Outputs}
 Output file is written to:

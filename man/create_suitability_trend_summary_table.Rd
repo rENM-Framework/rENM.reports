@@ -52,6 +52,7 @@ Input CSV must exist at:
 \item Sorts states by Range \\% descending and, if \code{top_states} is
 set, keeps only the top \code{top_states} rows.
 \item Renames columns for presentation.
+\item Appends the boundary block, when boundary statistics exist.
 \item Builds a formatted Excel workbook using \code{openxlsx}.
 \item Creates a styled table using \code{gt}.
 \item Optionally exports PNG using webshot2 if available.
@@ -72,6 +73,23 @@ Output files are written to:
 Table columns are presented as:
 State, Extent Area, Range Area, Range \\%, Positive \\%,
 Negative \\%, Hot Spot Area, Hot Spot \\%.
+
+\strong{Boundary block}
+When
+\code{<alpha_code>-Suitability-Trend-Boundary-Statistics.csv} is present,
+written by \code{rENM.analysis::find_boundary_trend_statistics()}, two
+further rows are appended below the state rows and set off in bold above
+a rule: \code{Range interior} and \code{Buffer ring (250 km)}.
+
+These are range-wide figures, not states, and comparing them is the point:
+a ring more positive than the interior indicates conditions improving where
+the species would expand into, while a ring less positive indicates the
+reverse. They are never to be summed with the state rows. Extent Area and
+Range \\% are blank for them, since Range \\% is a state's share of the
+species total range and has no analogue here.
+
+The block is omitted when the file is absent, so the table still builds
+for runs predating that function.
 
 \strong{Log behavior}
 Appends a processing summary to:

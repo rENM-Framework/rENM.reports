@@ -1,7 +1,7 @@
 # rENM.reports 0.2.0.9000
 
 * `create_suitability_trend_summary_table()` — appends a boundary block below
-  the state rows, set off in bold above a rule: `Range interior` and
+  the state rows, separated by a rule: `Range interior` and
   `Buffer ring (250 km)`, read from the CSV written by
   `rENM.analysis::find_boundary_trend_statistics()`. These are range-wide
   figures rather than states, and the comparison between them is the point —
