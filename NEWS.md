@@ -1,5 +1,10 @@
 # rENM.reports 0.2.0.9000
-
+* `inst/resources/variables.pdf` — removed a trailing blank page. The file
+  had always been two pages with an empty second one, which put a blank page
+  at the end of every assembled report. The `.docx` it is generated from ends
+  with an empty paragraph that spills past the first page; that paragraph is
+  still there, so the blank page returns if the PDF is regenerated from Word
+  without deleting it.
 * Added `inst/resources/methods.docx`/`.pdf`, a methods note appended to
   every report. The report previously carried no methods text at all, so a
   reader had no way to know what defined the modeled extent. It states that
@@ -111,7 +116,6 @@
   `create_variable_trend_summary_table()`.
 
 # rENM.reports 0.1.0
-
 * Initial release.
 * Added `gather_suitability_maps()` to assemble a 3×3 suitability map contact
   sheet (PNG, PDF, DOCX).
