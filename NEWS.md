@@ -1,4 +1,10 @@
 # rENM.reports 0.2.0.9000
+* `assemble_final_report()` — the `cpdf` check now runs on every call rather
+  than only when `page_numbers = TRUE`. Page normalization invokes `cpdf`
+  unconditionally, so `page_numbers = FALSE` never avoided the dependency;
+  it only skipped the check, leaving the normalization call to fail with
+  `cpdf`'s exit status instead of the message explaining what to install.
+  The help text implied the same thing and has been corrected.
 * `inst/resources/variables.pdf` — removed a trailing blank page. The file
   had always been two pages with an empty second one, which put a blank page
   at the end of every assembled report. The `.docx` it is generated from ends

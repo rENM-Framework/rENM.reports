@@ -18,10 +18,12 @@
 #' Optional front matter and appendix PDFs must be located in
 #' \code{inst/resources/} within the rENM.reports package.
 #'
-#' Page numbers are stamped directly onto the combined PDF using
-#' \code{cpdf} (Coherent PDF Tools), preserving full vector quality
-#' without rasterization. \code{cpdf} must be on the system PATH;
-#' install via \code{brew install cpdf} on macOS.
+#' Pages are normalized to letter size and page numbers are stamped
+#' directly onto the combined PDF using \code{cpdf} (Coherent PDF Tools),
+#' preserving full vector quality without rasterization. \code{cpdf} must
+#' be on the system PATH; install via \code{brew install cpdf} on macOS.
+#' Normalization runs on every call, so \code{cpdf} is required even when
+#' \code{page_numbers = FALSE}.
 #'
 #' When \code{docx = TRUE}, each page is rasterized to PNG and inserted
 #' into a Word document via the \code{officer} package. Rasterization is
@@ -73,7 +75,9 @@
 #'   followed by the MERRA variable reference. Unlike the page set, these
 #'   are static assets, so a missing one is always an error.
 #' @param page_numbers Logical. Stamp page numbers on the PDF (default
-#'   TRUE). Cover page (page 1) is always left unnumbered.
+#'   TRUE). Cover page (page 1) is always left unnumbered. Setting this to
+#'   \code{FALSE} does not remove the \code{cpdf} requirement, since page
+#'   normalization uses it regardless.
 #' @param docx Logical. Also produce a .docx version (default FALSE).
 #'   Requires the \code{officer} and \code{png} packages. Pages are
 #'   rasterized to PNG at \code{dpi} resolution for Word embedding.
@@ -124,14 +128,17 @@ assemble_final_report <- function(alpha_code,
   if (!requireNamespace("pdftools", quietly = TRUE)) {
     stop("Package 'pdftools' is required but not installed.")
   }
-  if (page_numbers) {
-    cpdf_path <- Sys.which("cpdf")
-    if (cpdf_path == "") {
-      stop(
-        "cpdf is required for page numbering but was not found on PATH.\n",
-        "Install via: brew install cpdf"
-      )
-    }
+  # Checked unconditionally: page normalization runs cpdf on every call, so
+  # page_numbers = FALSE does not avoid the dependency. Guarding this on
+  # page_numbers skipped the check and left that call to fail with cpdf's
+  # own exit status instead of this message.
+  cpdf_path <- Sys.which("cpdf")
+  if (cpdf_path == "") {
+    stop(
+      "cpdf is required for page normalization and numbering but was not ",
+      "found on PATH.\n",
+      "Install via: brew install cpdf"
+    )
   }
   if (docx) {
     if (!requireNamespace("officer", quietly = TRUE)) {

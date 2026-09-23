@@ -48,7 +48,9 @@ followed by the MERRA variable reference. Unlike the page set, these
 are static assets, so a missing one is always an error.}
 
 \item{page_numbers}{Logical. Stamp page numbers on the PDF (default
-TRUE). Cover page (page 1) is always left unnumbered.}
+TRUE). Cover page (page 1) is always left unnumbered. Setting this to
+\code{FALSE} does not remove the \code{cpdf} requirement, since page
+normalization uses it regardless.}
 
 \item{docx}{Logical. Also produce a .docx version (default FALSE).
 Requires the \code{officer} and \code{png} packages. Pages are
@@ -85,10 +87,12 @@ Users may override this behavior via the \code{pages} argument to:
 Optional front matter and appendix PDFs must be located in
 \code{inst/resources/} within the rENM.reports package.
 
-Page numbers are stamped directly onto the combined PDF using
-\code{cpdf} (Coherent PDF Tools), preserving full vector quality
-without rasterization. \code{cpdf} must be on the system PATH;
-install via \code{brew install cpdf} on macOS.
+Pages are normalized to letter size and page numbers are stamped
+directly onto the combined PDF using \code{cpdf} (Coherent PDF Tools),
+preserving full vector quality without rasterization. \code{cpdf} must
+be on the system PATH; install via \code{brew install cpdf} on macOS.
+Normalization runs on every call, so \code{cpdf} is required even when
+\code{page_numbers = FALSE}.
 
 When \code{docx = TRUE}, each page is rasterized to PNG and inserted
 into a Word document via the \code{officer} package. Rasterization is
