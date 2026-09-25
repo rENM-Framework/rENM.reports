@@ -1,4 +1,12 @@
 # rENM.reports 0.2.0.9000
+* The methods note appended to every report now says a boundary percentage
+  must be read with the zone's median slope, so a ring near 50 percent is
+  understood as no detectable signal rather than as balance. The buffer ring
+  paragraph was rewritten rather than added to: the note had eight points of
+  slack on its single page, so any addition pushed the Reference section onto
+  a second page and lengthened every report. Three redundancies in that
+  paragraph paid for the new clause, and the note ends one point higher than
+  before.
 * `assemble_final_report()` — the `cpdf` check now runs on every call rather
   than only when `page_numbers = TRUE`. Page normalization invokes `cpdf`
   unconditionally, so `page_numbers = FALSE` never avoided the dependency;
