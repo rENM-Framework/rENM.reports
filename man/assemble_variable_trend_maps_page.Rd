@@ -31,8 +31,8 @@ Side effects:
 }
 }
 \description{
-Builds a multi-page PDF that shows trends and acceleration/deceleration
-patterns of the top contributing variables.
+Builds a multi-page PDF that shows the trend and the change trend (the
+trend in successive changes) of the top contributing variables.
 }
 \details{
 \strong{Pipeline context}

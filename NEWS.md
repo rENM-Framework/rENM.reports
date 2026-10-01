@@ -1,4 +1,15 @@
 # rENM.reports 0.2.0.9000
+* The suitability-trend and variable-trend-maps captions now say what the
+  colors in the change-trend panels mean. The first said the panel showed
+  where change was "accelerating or decelerating" without saying which
+  color was which. The second said that in both panels green meant
+  increasing values, which is wrong for the change-trend panel: there green
+  means successive changes grew more positive, which a declining variable
+  can show. The variable-trend-maps PDF was regenerated from its `.docx`
+  with LibreOffice, which substitutes the metric-compatible Carlito for
+  Calibri, as the hot-spot caption already does. The suitability-trend PDF
+  was redrawn with ReportLab at its original font, size and position.
+
 * The methods note appended to every report now says a boundary percentage
   must be read with the zone's median slope, so a ring near 50 percent is
   understood as no detectable signal rather than as balance. The buffer ring
