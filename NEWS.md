@@ -1,4 +1,16 @@
 # rENM.reports 0.2.0.9000
+* The variable contribution and variable trend maps captions now say that
+  the variables are properties of one run. The candidates are strongly
+  correlated and many sets of them fit about equally well, so another run
+  can select different variables that describe the same climate gradients.
+  In five seeded CASP runs, the variable sets two runs selected for the
+  same interval overlapped by 0.45 on average (Jaccard index), while all 45
+  models drew on one gradient of temperature and shortwave radiation. The
+  contribution caption also says a trend in one variable's contribution can
+  reflect weight shifting among correlated variables. The caption grew from
+  six lines to ten, filling its box; it sits below the plot and table,
+  which keep their size on the assembled page.
+
 * The suitability-trend and variable-trend-maps captions now say what the
   colors in the change-trend panels mean. The first said the panel showed
   where change was "accelerating or decelerating" without saying which
