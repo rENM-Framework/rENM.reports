@@ -1,4 +1,20 @@
 # rENM.reports 0.2.0.9000
+* `create_variable_trend_summary_table()` adds a two-line note under the
+  table giving the share of total importance, summed over all intervals,
+  carried by the variables listed and by those not listed, the latter split
+  into MERRA-2 and MERRAclim-2. In every CASP run the table left out 27 to
+  35 percent of total importance, mostly MERRA-2 land-surface variables each
+  selected in only one or two intervals, without saying so. Listing those
+  variables individually would add rows that change with every seed. The
+  note is two short lines because a single line as wide as the table
+  widened the image, and the page then scaled the whole table down. The
+  variable contribution caption says what the note gives.
+* The hotspot summary caption now says that hotspot locations differ
+  between runs at different seeds, so the broad pattern is more reliable
+  than any single patch. Across six species, hotspot maps from two seeds
+  overlapped by 16 to 38 percent (Jaccard). The caption stays on one page,
+  at ten lines.
+
 * `create_variable_trend_summary_table()` no longer stars or bolds variables
   by probability of direction, and `gather_top_variable_trend_maps()` no
   longer draws a blue strip beside them. Across six species and 35 seeded runs, only one

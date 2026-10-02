@@ -298,6 +298,24 @@ create_variable_trend_summary_table <- function(alpha_code, mark_trends = FALSE)
       table_body.vlines.width = gt::px(0)
     )
 
+  # ---- Importance outside the table ----------------------------------------
+  # The table lists ten variables, but in a typical run another 15 to 23 share
+  # about a third of total importance between them, mostly MERRA-2 land-
+  # surface variables selected in only one or two intervals each. Listing them
+  # would add rows that change with every seed; one note says how much the
+  # table leaves out and of which kind.
+  other_note <- .other_variables_note(
+    file.path(project_dir, "runs", code, "Trends", "variables",
+              sprintf("%s-Variables-AllYears.csv", code)),
+    trimws(df_raw$Variable)
+  )
+  # Two short lines rather than one: a source note as wide as the table's
+  # columns widens the image, and the page then scales the whole table down.
+  for (ln in other_note[!is.na(other_note)]) gt_tbl <- gt::tab_source_note(gt_tbl, ln)
+  if (any(!is.na(other_note)))
+    gt_tbl <- gt::tab_options(gt_tbl, source_notes.font.size = gt::px(7),
+                              source_notes.padding = gt::px(1))
+
   wrote_png <- FALSE; wrote_pdf <- FALSE
   if (has_webshot2) { .gt_save_with_timeout(gt_tbl, out_png);  wrote_png <- file.exists(out_png) }
   if (has_pagedown) { .gt_save_with_timeout(gt_tbl, out_pdf); wrote_pdf <- file.exists(out_pdf) }
@@ -320,4 +338,39 @@ create_variable_trend_summary_table <- function(alpha_code, mark_trends = FALSE)
   .append_log(code, outputs, elapsed, project_dir)
 
   invisible(outputs)
+}
+
+#' Share of total importance carried by variables outside the table
+#'
+#' @details
+#' Total importance is the sum, over all intervals and variables, of each
+#' variable's percent importance as ranked by the ensemble models. Variables
+#' named \code{bio1} to \code{bio19} are MERRAclim-2; all others are MERRA-2.
+#'
+#' @param all_years_csv Character. Path to \code{<CODE>-Variables-AllYears.csv}.
+#' @param listed Character. Variables shown in the table.
+#'
+#' @return Character vector of two lines, or \code{NA} when the file is
+#'   missing or nothing lies outside the table.
+#'
+#' @keywords internal
+#' @noRd
+.other_variables_note <- function(all_years_csv, listed) {
+  if (!file.exists(all_years_csv)) return(NA_character_)
+  ay <- utils::read.csv(all_years_csv, stringsAsFactors = FALSE, check.names = FALSE)
+  ycols <- grep("^Y[0-9]{4}$", names(ay), value = TRUE)
+  if (!length(ycols)) return(NA_character_)
+  ay$Variable <- trimws(ay$Variable)
+  tot <- rowSums(ay[, ycols, drop = FALSE], na.rm = TRUE)
+  grand <- sum(tot)
+  out <- !(ay$Variable %in% listed)
+  if (!any(out) || grand <= 0) return(NA_character_)
+  pct <- function(k) 100 * sum(tot[k]) / grand
+  is_mc <- grepl("^bio[0-9]+$", ay$Variable)
+  c(
+    sprintf("Listed: %d variables, %.1f%% of total importance across all intervals.",
+            sum(!out), pct(!out)),
+    sprintf("Not listed: %d variables, %.1f%% (MERRA-2 %.1f%%, MERRAclim-2 %.1f%%).",
+            sum(out), pct(out), pct(out & !is_mc), pct(out & is_mc))
+  )
 }
