@@ -5,10 +5,17 @@
 \alias{create_variable_trend_summary_table}
 \title{Create a variable trend summary table}
 \usage{
-create_variable_trend_summary_table(alpha_code)
+create_variable_trend_summary_table(alpha_code, mark_trends = FALSE)
 }
 \arguments{
 \item{alpha_code}{Character. Species alpha code.}
+
+\item{mark_trends}{Logical. When \code{TRUE}, variables whose contribution
+slope has a probability of direction of at least 85 percent are starred
+(*, **, *** at 85, 90, 95) and set in bold. Default \code{FALSE}: the PD
+column is still reported but no row is emphasized. Single-run directional trends rarely recur: across six species and
+35 seeded runs, only one variable's flagged trend (CASP bio8, 9 of 10
+runs) recurred in at least 80 percent of runs.}
 }
 \value{
 A named list returned invisibly with the following elements:

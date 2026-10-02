@@ -1,4 +1,15 @@
 # rENM.reports 0.2.0.9000
+* `create_variable_trend_summary_table()` no longer stars or bolds variables
+  by probability of direction, and `gather_top_variable_trend_maps()` no
+  longer draws a blue strip beside them. Across six species and 35 seeded runs, only one
+  flagged trend recurred in at least 80 percent of a species' runs (CASP
+  bio8, declining in 9 of 10); the rest appeared at one seed and not the
+  next, so marking them presented a single draw as a finding. The PD
+  column is still reported. Both functions keep the marking as
+  `mark_trends = TRUE`. The variable contribution caption drops its
+  description of the marking and says why none is shown; the variable maps
+  caption drops its blue-sidebar paragraph.
+
 * The variable contribution and variable trend maps captions now say that
   the variables are properties of one run. The candidates are strongly
   correlated and many sets of them fit about equally well, so another run

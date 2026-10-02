@@ -84,6 +84,12 @@
 #' slope_ci_upper or slope_ci_high).
 #'
 #' @param alpha_code Character. Species alpha code.
+#' @param mark_trends Logical. When \code{TRUE}, variables whose contribution
+#'   slope has a probability of direction of at least 85 percent are starred
+#'   (*, **, *** at 85, 90, 95) and set in bold. Default \code{FALSE}: the PD
+#'   column is still reported but no row is emphasized. Single-run directional trends rarely recur: across six species and
+#'   35 seeded runs, only one variable's flagged trend (CASP bio8, 9 of 10
+#'   runs) recurred in at least 80 percent of runs.
 #'
 #' @return
 #' A named list returned invisibly with the following elements:
@@ -112,7 +118,7 @@
 #' }
 #'
 #' @export
-create_variable_trend_summary_table <- function(alpha_code) {
+create_variable_trend_summary_table <- function(alpha_code, mark_trends = FALSE) {
   # ---- Dependencies ---------------------------------------------------------
   req <- c("readr", "dplyr", "openxlsx", "gt")
   missing_pkgs <- req[!vapply(req, requireNamespace, logical(1), quietly = TRUE)]
@@ -188,6 +194,7 @@ create_variable_trend_summary_table <- function(alpha_code) {
   df <- df_raw %>%
     dplyr::mutate(
       sig_mark = dplyr::case_when(
+        !isTRUE(mark_trends) ~ "",
         !is.na(pd_slope) & pd_slope >= 95 ~ "***",
         !is.na(pd_slope) & pd_slope >= 90 ~ "**",
         !is.na(pd_slope) & pd_slope >= 85 ~ "*",
@@ -205,7 +212,7 @@ create_variable_trend_summary_table <- function(alpha_code) {
       `ROPE %` = suppressWarnings(as.numeric(.data$rope_slope_pct))
     )
 
-  bold_rows <- which(!is.na(df$PD) & df$PD >= 85)
+  bold_rows <- if (isTRUE(mark_trends)) which(!is.na(df$PD) & df$PD >= 85) else integer(0)
 
   # ---- Excel workbook -------------------------------------------------------
   wb <- openxlsx::createWorkbook(); openxlsx::addWorksheet(wb, "Summary", gridLines = FALSE)
@@ -278,7 +285,7 @@ create_variable_trend_summary_table <- function(alpha_code) {
     gt::fmt_number(columns = `ROPE %`, decimals = 1) %>%
     gt::tab_style(
       style = gt::cell_text(weight = "bold"),
-      locations = gt::cells_body(columns = Variable, rows = !is.na(PD) & PD >= 85)
+      locations = gt::cells_body(columns = Variable, rows = !is.na(PD) & PD >= 85 & mark_trends)
     ) %>%
     gt::opt_row_striping() %>%
     gt::tab_options(

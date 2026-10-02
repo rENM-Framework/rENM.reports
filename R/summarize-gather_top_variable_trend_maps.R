@@ -29,8 +29,9 @@
 #' }
 #'
 #' \strong{Highlight rule}  
-#' If the CSV includes \code{pd_slope}, any variable with  
-#' \code{\{pd_slope >= 90\}} receives a dark-blue strip along the left edge.
+#' With \code{mark_trends = TRUE}, and if the CSV includes \code{pd_slope},  
+#' any variable with \code{\{pd_slope >= 90\}} receives a dark-blue strip  
+#' along the left edge. Off by default.
 #'
 #' \strong{Layout and styling}
 #' \itemize{
@@ -78,6 +79,10 @@
 #' @param margin_in Numeric. Page margin in inches on all sides.
 #' @param trim_fuzz Numeric. Fuzz parameter passed to
 #'   \code{magick::image_trim()} (in pixels).
+#' @param mark_trends Logical. When \code{TRUE}, draw the dark-blue strip
+#'   described under Highlight rule. Default \code{FALSE}. Single-run directional trends rarely recur: across six species and
+#'   35 seeded runs, only one variable's flagged trend (CASP bio8, 9 of 10
+#'   runs) recurred in at least 80 percent of runs.
 #'
 #' @return A \code{list} with the following elements:
 #' \itemize{
@@ -120,7 +125,8 @@ gather_top_variable_trend_maps <- function(alpha_code,
                                            page_width_in = 8.5,
                                            page_height_in = 11,
                                            margin_in = 1,
-                                           trim_fuzz = 8) {
+                                           trim_fuzz = 8,
+                                           mark_trends = FALSE) {
   t_start <- Sys.time()
   
   # ---- Dependency checks ----------------------------------------------------
@@ -192,6 +198,7 @@ gather_top_variable_trend_maps <- function(alpha_code,
   } else {
     message("Note: 'pd_slope' column not found; left-edge highlights skipped.")
   }
+  if (!isTRUE(mark_trends)) slope_lookup <- NULL
   
   # ---- Page geometry --------------------------------------------------------
   full_w_px    <- round(page_width_in  * dpi)
