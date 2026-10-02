@@ -311,6 +311,14 @@ create_variable_trend_summary_table <- function(alpha_code, mark_trends = FALSE)
   )
   # Two short lines rather than one: a source note as wide as the table's
   # columns widens the image, and the page then scales the whole table down.
+  # A fit that failed its convergence diagnostics gets a short note naming
+  # the variable; its slope, interval and PD should not be read at face value.
+  if ("fit_ok" %in% names(df_raw)) {
+    bad <- trimws(df_raw$Variable[!is.na(df_raw$fit_ok) & !as.logical(df_raw$fit_ok)])
+    if (length(bad)) other_note <- c(other_note, sprintf(
+      "Fit did not converge cleanly for %s; read its slope, interval and PD with caution.",
+      paste(bad, collapse = ", ")))
+  }
   for (ln in other_note[!is.na(other_note)]) gt_tbl <- gt::tab_source_note(gt_tbl, ln)
   if (any(!is.na(other_note)))
     gt_tbl <- gt::tab_options(gt_tbl, source_notes.font.size = gt::px(7),

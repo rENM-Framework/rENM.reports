@@ -1,4 +1,9 @@
 # rENM.reports 0.2.0.9000
+* `create_variable_trend_summary_table()` adds a note naming any variable
+  whose Bayesian fit failed its convergence diagnostics, so its slope,
+  interval and PD are not read at face value. The note appears only when a
+  fit fails.
+
 * `create_variable_trend_summary_table()` adds a two-line note under the
   table giving the share of total importance, summed over all intervals,
   carried by the variables listed and by those not listed, the latter split
