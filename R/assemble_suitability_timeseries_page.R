@@ -203,7 +203,7 @@ assemble_suitability_timeseries_page <- function(alpha_code,
     format    = "png",
     dpi       = as.integer(caption_dpi),
     pages     = 1L,
-    filenames = file.path(tempdir(), "suitability_timeseries_caption_1.png")
+    filenames = file.path(tempdir(), "suitability_timeseries_caption_%d.%s")
   )
   im_cap   <- magick::image_read(cap_png)
   im_cap   <- magick::image_trim(im_cap, fuzz = fuzz)

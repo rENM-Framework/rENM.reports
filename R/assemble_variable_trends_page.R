@@ -221,7 +221,7 @@ assemble_variable_trends_page <- function(alpha_code,
     format    = "png",
     dpi       = table_pdf_dpi,
     pages     = 1L,
-    filenames = file.path(tempdir(), "variable_trend_table_1.png")
+    filenames = file.path(tempdir(), "variable_trend_table_%d.%s")
   )
   im_tbl <- magick::image_read(tbl_png)
   if (trim_table) {
@@ -234,7 +234,7 @@ assemble_variable_trends_page <- function(alpha_code,
     format    = "png",
     dpi       = as.integer(caption_dpi),
     pages     = 1L,
-    filenames = file.path(tempdir(), "variable_trend_caption_1.png")
+    filenames = file.path(tempdir(), "variable_trend_caption_%d.%s")
   )
   im_cap   <- magick::image_read(cap_png)
   im_cap   <- magick::image_trim(im_cap, fuzz = fuzz)

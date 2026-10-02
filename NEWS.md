@@ -1,4 +1,10 @@
 # rENM.reports 0.2.0.9000
+* The page-assembly functions no longer raise a warning each time they
+  rasterize a caption or table. They passed `pdftools::pdf_convert()` a
+  literal file name, which it formats with `sprintf()`, producing "2
+  arguments not used by format" eight times a run. They now pass the
+  pattern `<name>_%d.%s`, which yields the same file name.
+
 * `create_variable_trend_summary_table()` adds a note naming any variable
   whose Bayesian fit failed its convergence diagnostics, so its slope,
   interval and PD are not read at face value. The note appears only when a

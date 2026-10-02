@@ -359,7 +359,7 @@ assemble_state_trends_page <- function(alpha_code,
     format    = "png",
     dpi       = as.integer(caption_dpi),
     pages     = 1L,
-    filenames = file.path(tempdir(), "hotspot_caption_1.png")
+    filenames = file.path(tempdir(), "hotspot_caption_%d.%s")
   )
   im_cap <- magick::image_read(cap_png)
   im_cap <- magick::image_trim(im_cap, fuzz = fuzz)
