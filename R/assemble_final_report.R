@@ -251,9 +251,9 @@ assemble_final_report <- function(alpha_code,
             alpha_code, "'.")
     message("  - Pages selected : ", length(input_paths))
     message("  - Front matter   : ",
-            ifelse(is.null(front_matter), "NONE", front_matter))
+            if (is.null(front_matter)) "NONE" else paste(basename(front_matter), collapse = ", "))
     message("  - Appendix       : ",
-            ifelse(is.null(appendix), "NONE", appendix))
+            if (is.null(appendix)) "NONE" else paste(basename(appendix), collapse = ", "))
     message("  - Page numbers   : ", page_numbers)
     message("  - DOCX output    : ", docx)
     message("[assemble_final_report] All input PDFs found.")
@@ -439,9 +439,9 @@ assemble_final_report <- function(alpha_code,
     sprintf("Alpha code      : %s", alpha_code),
     sprintf("Input PDFs      : %d", length(input_paths)),
     sprintf("Front matter    : %s",
-            ifelse(is.null(front_matter), "NONE", front_matter)),
+            if (is.null(front_matter)) "NONE" else paste(basename(front_matter), collapse = ", ")),
     sprintf("Appendix        : %s",
-            ifelse(is.null(appendix), "NONE", appendix)),
+            if (is.null(appendix)) "NONE" else paste(basename(appendix), collapse = ", ")),
     sprintf("Page numbers    : %s", page_numbers),
     sprintf("DOCX output     : %s", docx),
     sprintf("DPI             : %s", ifelse(docx, dpi, "NA")),
