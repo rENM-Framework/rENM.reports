@@ -8,7 +8,7 @@
 
 `rENM.reports` assembles the final, publication-ready outputs of the rENM Framework. It integrates modeled results and analytical metrics into structured summaries, maps, tables, and reports.
 
-This package depends on `rENM.core` for project-directory resolution and species metadata access. All functions accept an optional `project_dir` argument; see `?rENM_project_dir` for configuration options.
+This package depends on `rENM.core` for project-directory resolution and species metadata access. Functions find the project directory through `rENM.core::rENM_project_dir()`; see `?rENM_project_dir` for configuration options.
 
 ## Key functions
 
@@ -67,7 +67,8 @@ Analytical outputs from `rENM.analysis` must be present before running reporting
 ``` r
 library(rENM.reports)
 
-proj <- "/path/to/your/rENM/project"
+# set once per session, or set RENM_PROJECT_DIR in ~/.Renviron
+options(rENM.project_dir = "/path/to/your/rENM/project")
 
 # 1. Gather map contact sheets
 gather_suitability_maps("CASP")
@@ -93,15 +94,6 @@ assemble_range_timeseries_page("CASP")
 assemble_final_report("CASP")
 ```
 
-For interactive work, configure the project directory once per session to avoid passing it to every function:
-
-``` r
-options(rENM.project_dir = "/path/to/your/rENM/project")
-
-gather_suitability_maps("CASP")
-assemble_final_report("CASP")
-```
-
 ## Reporting pipeline
 
 ```         
@@ -124,7 +116,7 @@ assemble_range_timeseries_page()
 assemble_final_report()
 ```
 
-Map contact sheets are written to `<run_dir>/Summaries/maps/`. Tables are written to `<run_dir>/Summaries/tables/`. Assembled pages are written to `<run_dir>/Summaries/pages/`. The final report is written to `<run_dir>/Summaries/`. All functions append a structured summary block to `<run_dir>/_log.txt`.
+Map contact sheets are written to `<run_dir>/Summaries/maps/`. Tables are written to `<run_dir>/Summaries/tables/`. Assembled pages are written to `<run_dir>/Summaries/pages/`. The final report is written to `<run_dir>/Summaries/`. Most functions append a structured summary block to `<run_dir>/_log.txt`.
 
 ## Role in the rENM Framework
 
