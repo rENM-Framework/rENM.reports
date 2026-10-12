@@ -37,7 +37,7 @@
 #' \itemize{
 #'   \item Each A <-> B pair is slightly down-scaled to add whitespace.
 #'   \item The gutter between A and B, as well as row spacing, is widened.
-#'   \item The full column is scaled to 96\% of the content width and centred.
+#'   \item The full column is scaled to 96\% of the content width and centered.
 #'   \item Excess height beyond the content area is cropped from the bottom.
 #' }
 #'
